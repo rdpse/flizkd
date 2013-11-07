@@ -9,7 +9,7 @@ then
         exit 0
     fi
 else
-    bash /root/scripts/flizkd-conf.sh
+    bash /root/flizkd/scripts/flizkd-conf.sh
     exit 0
 fi
 
@@ -300,7 +300,7 @@ cp /etc/apt/sources.list /etc/apt/sources.list.back
     fi
 fi
 
-cd /root/flizkd
+cd /root/flizkd/cfg
 /etc/init.d/vsftpd stop
 rm /etc/vsftpd.conf
 mkdir /etc/vsftpd
@@ -311,7 +311,7 @@ rm /etc/lighttpd/lighttp.conf
 cp lighttpd.conf /etc/lighttpd
 sed -i 's/<SWAP-FOR-IP>/'$IP'/g' /etc/lighttpd/lighttpd.conf
 
-cd /root/scripts
+cd /root/flizkd/scripts
 sh makepem.sh /etc/vsftpd/vsftpd.pem /etc/vsftpd/vsftpd.pem vsftpd
 
 /etc/init.d/vsftpd start
@@ -325,14 +325,14 @@ add_deluge_cron=no
 if [ $deluge_yn = "yes" ]; then
 mkdir -p /home/$usernamevar/.config/deluge
 mkdir /home/$usernamevar/deluge_watch
-cp /root/flizkd/web.conf /home/$usernamevar/.config/deluge/
-sed 's/<username>/'$usernamevar'/' /root/flizkd/core.conf > /home/$usernamevar/.config/deluge/core.conf
+cp /root/flizkd/cfg/web.conf /home/$usernamevar/.config/deluge/
+sed 's/<username>/'$usernamevar'/' /root/flizkd/cfg/core.conf > /home/$usernamevar/.config/deluge/core.conf
 sh makepem.sh /etc/lighttpd/certs/deluge.cert.pem /etc/lighttpd/certs/deluge.key.pem deluge
 add_deluge_cron=yes       
     if [ $ubuntu = "yes" ]; then            
         if [ $ub1011 = "yes" ]; then
         apt-get install -y python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako
-        cd /root/source
+        cd /root/flizkd/source
         wget http://download.deluge-torrent.org/source/deluge-1.3.6.tar.gz && tar zxfv deluge-1.3.6.tar.gz
         rm deluge-1.3.6.tar.gz
         cd deluge-1.3.6
@@ -346,7 +346,7 @@ add_deluge_cron=yes
         fi
     fi
     if [ $debian = "yes" ]; then
-    cd /root/source
+    cd /root/flizkd/source
     wget http://download.deluge-torrent.org/source/deluge-1.3.6.tar.gz && tar xvzf deluge-1.3.6.tar.gz
     rm deluge-1.3.6.tar.gz
     cd deluge-1.3.6
@@ -356,12 +356,12 @@ add_deluge_cron=yes
     fi
         
 echo $passvar >/root/pass.txt
-cd /root/scripts
+cd /root/flizkd/scripts
 python chdelpass.py /home/$usernamevar/.config/deluge
 shred -n 6 -u -z /root/pass.txt
 fi
 
-cd /root/source
+cd /root/flizkd/source
 
 if [ $znc_yn = "yes" ]; then
         apt-get -y install build-essential libssl-dev libperl-dev pkg-config libc-ares-dev
@@ -391,7 +391,7 @@ apt-get install -y openssl libauthen-pam-perl libio-pty-perl apt-show-versions
 fi
 
 if [ $rtorrent_yn = "yes" ]; then
-cd /root/source
+cd /root/flizkd/source
 svn co http://svn.code.sf.net/p/xmlrpc-c/code/advanced xmlrpc-c
 cd xmlrpc-c
 ./configure
@@ -434,29 +434,29 @@ mkdir -p $usernamevar/plugins/autodl-irssi
 sed -i 's/<username>/'$usernamevar'/' /var/www/rutorrent/conf/config.php
 cp /var/www/rutorrent/conf/config.php /var/www/rutorrent/conf/users/$usernamevar/config.php
 cp /var/www/rutorrent/plugins/autodl-irssi/_conf.php /var/www/rutorrent/plugins/autodl-irssi/conf.php
-sed -e 's/<adlport>/'$adlport'/' -e 's/<pass>/'$usernamevar'/' /root/flizkd/adlconf > /var/www/rutorrent/conf/users/$usernamevar/plugins/autodl-irssi/conf.php
+sed -e 's/<adlport>/'$adlport'/' -e 's/<pass>/'$usernamevar'/' /root/flizkd/cfg/adlconf > /var/www/rutorrent/conf/users/$usernamevar/plugins/autodl-irssi/conf.php
 
 rm /etc/init.d/rtorrent
-sed 's/<username>/'$usernamevar'/' /root/flizkd/rtorrent >> /etc/init.d/rtorrent
+sed 's/<username>/'$usernamevar'/' /root/flizkd/cfg/rtorrent >> /etc/init.d/rtorrent
 cd /etc/init.d/
 chmod +x rtorrent
 update-rc.d rtorrent defaults
 rm /home/$usernamevar/.rtorrent.rc
-sed 's/<username>/'$usernamevar'/' /root/flizkd/.rtorrent.rc > /home/$usernamevar/.rtorrent.rc
+sed 's/<username>/'$usernamevar'/' /root/flizkd/cfg/.rtorrent.rc > /home/$usernamevar/.rtorrent.rc
 echo "check_hash = no" >> /home/$usernamevar/.rtorrent.rc
 mkdir /home/$usernamevar/downloads
 mkdir /home/$usernamevar/scripts
 mkdir -p /home/$usernamevar/rtorrent_watch
 mkdir -p /home/$usernamevar/rtorrent/.session
 mkdir -p /home/$usernamevar/.irssi/scripts/autorun
-sed 's/<username>/'$usernamevar'/' /root/flizkd/check-rtorrent > /home/$usernamevar/scripts/check-rt
+sed 's/<username>/'$usernamevar'/' /root/flizkd/cfg/check-rtorrent > /home/$usernamevar/scripts/check-rt
 chmod +x /home/$usernamevar/scripts/check-rt
 cd /home/$usernamevar/.irssi/scripts
 wget https://sourceforge.net/projects/autodl-irssi/files/autodl-irssi-v1.31.zip --no-check-certificate
 unzip -o autodl-irssi-v*.zip
 rm autodl-irssi-v*.zip
 cp autodl-irssi.pl autorun/
-mv /root/flizkd/iFR.tracker AutodlIrssi/trackers/
+mv /root/flizkd/cfg/iFR.tracker AutodlIrssi/trackers/
 
     if [ $os_version = "12.04" ]; then
     cp AutodlIrssi/MatchedRelease.pm matchtemp
@@ -483,7 +483,7 @@ chown -R $usernamevar:$usernamevar /home/$usernamevar/
     update-rc.d apache2 disable
     fi
 
-cd /root/scripts
+cd /root/flizkd/scripts
 python htdigest.py -c -b /etc/lighttpd/.passwd "ruTorrent" $usernamevar $passvar
 sh makepem.sh /etc/lighttpd/certs/rutorrent.pem /etc/lighttpd/certs/rutorrent.pem rutorrent
 
@@ -496,7 +496,7 @@ echo "@reboot /usr/bin/screen -dmS irssi irssi" >> tempcron
 fi
 
 if [ $add_deluge_cron = "yes" ]; then
-sed 's/<username>/'$usernamevar'/' /root/flizkd/check-deluge > /home/$usernamevar/scripts/check-deluge
+sed 's/<username>/'$usernamevar'/' /root/flizkd/cfg/check-deluge > /home/$usernamevar/scripts/check-deluge
 chown $usernamevar:$usernamevar /home/$usernamevar/scripts/check-deluge
 chmod +x /home/$usernamevar/scripts/check-deluge
 echo "@reboot /home/"$usernamevar"/scripts/check-deluge >> /dev/null 2>&1" >> tempcron

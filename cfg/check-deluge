@@ -1,0 +1,30 @@
+#!/bin/sh
+PATH=/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/bin:/sbin
+USER='<username>'
+SERVICE='deluged'
+SERVICE2='deluge-web'
+HOMEDIR="/home/$USER"
+SIZE=99 #total %age
+
+df $HOMEDIR| tail -1 | while read fs size used avail pcnt mount;
+do
+  pcnt=$(echo ${pcnt} | cut -d'%' -f1 )
+  if [ ${pcnt} -ge $SIZE ]; then
+    echo "Running out of space \"${fs} (${pcnt}%)\" on ${HOSTNAME} as on $(date)"
+    exit 1
+  fi
+
+if pgrep -u $USER $SERVICE > /dev/null
+then
+    echo "$SERVICE service running, everything is fine"
+else
+    echo "$SERVICE is not running, starting $SERVICE" && $SERVICE
+fi
+if pgrep -u $USER $SERVICE2 > /dev/null
+then
+    echo "$SERVICE2 service running, everything is fine"
+else
+    echo "$SERVICE2 is not running, starting $SERVICE2" && screen -d -m -S deluge-web $SERVICE2
+fi
+done
+
