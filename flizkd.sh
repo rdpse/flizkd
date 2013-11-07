@@ -71,6 +71,22 @@ case $os_version in
         ub1011=no
         ub1011x=no
         ;;
+        "13.04")
+        ubuntu=yes
+        deb6=no
+        deb7=no
+        var9=yes
+        ub1011=no
+        ub1011x=no
+        ;;
+        "13.10")
+        ubuntu=yes
+        deb6=no
+        deb7=no
+        var9=yes
+        ub1011=no
+        ub1011x=no
+        ;;
         6.0.[0-9])
         var9=yes
         debian=yes
@@ -125,7 +141,7 @@ case $yno in
         [yY] | [yY][Ee][Ss] | "")
                 echo -n "Please choose a password: "`tput setaf 0``tput setab 0`
                 read passvar
-                echo -n `tput sgr0`"Please retype password: "`tput setaf 0``tput setab 0`
+                echo -n `tput sgr0`"Retype password: "`tput setaf 0``tput setab 0`
                 read passvar2
                 tput sgr0
                 case $passvar2 in
@@ -501,14 +517,14 @@ fi
 
 echo
 if [ $rtorrent_yn = "yes"]; then
-echo `tput sgr0`"Your rutorrent can be found at "`tput setaf 4``tput bold`"https://"$IP"/rutorrent/"
-echo `tput sgr0`"Your webdownload folder can be found at "`tput setaf 4``tput bold`"https://"$IP"/webdownload/"`tput sgr0`
+echo `tput sgr0`"You can access ruTorrent at "`tput setaf 4``tput bold`"https://"$IP"/rutorrent/"
+echo `tput sgr0`"You can access your webdownload fodler at "`tput setaf 4``tput bold`"https://"$IP"/webdownload/"`tput sgr0`
 fi
 if [ $deluge_yn = "yes" ]; then
-echo "Your deluge can be found at "`tput setaf 4``tput bold`"https://"$IP":8877"
+echo "You can access your Deluge WebUI at "`tput setaf 4``tput bold`"https://"$IP":8877"
 fi
 if [ $webmin_yn = "yes" ]; then
-echo `tput sgr0`"Your webmin control panel can be found at "`tput setaf 4``tput bold`"https://"$IP":10000"`tput sgr0`
+echo `tput sgr0`"You can access Webmin at "`tput setaf 4``tput bold`"https://"$IP":10000"`tput sgr0`
 fi
 tput sgr0
 echo
@@ -516,14 +532,14 @@ echo "Use the username and/or password you chose earlier for the above web-links
 if [ $znc_yn = "yes" ]; then
 echo
 echo `tput setaf 3`"ZNC is installed, but you will need to configure it yourself, to do this,"
-echo "you will need to log into SSH as the user you created, use the command:"
-echo "'znc --makeconf' and follow the instuctions.."
+echo "you will need to log into SSH with the user you created and run the following command:"
+echo "'znc --makeconf'"
 fi
 echo
 echo `tput setaf 1`"Your browser may tell you the SSL certificate is not trusted - this is fine"
 echo "as its a self-signed certificate (your connection will still be secure)."`tput sgr0`
 echo
-echo `tput setaf 2``tput bold`"Rebooting now...! Wait a couple of mins before trying ruTorrent..!"`tput sgr0`
+echo `tput setaf 2``tput bold`"Rebooting... Wait a couple of minutes before trying to access ruTorrent."`tput sgr0`
 echo
 
 sed -i 's/Port 22/Port 22 # fliz_ssh/' /etc/ssh/sshd_config
