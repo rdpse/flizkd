@@ -14,7 +14,7 @@ else
 fi
 
 distro=$(lsb_release -ds | awk '{ printf $0 }')
-os_version=$(lsb_release -r | awk '{ printf $0 }')
+os_version=$(lsb_release -rs | awk '{ printf $0 }')
 arch=$(uname -m)
 kscheck=$(hostname | cut -d. -f2)
 IP=$(ifconfig eth0 | grep 'inet addr' | awk -F: '{ printf $2 }' | awk '{ printf $1 }')
