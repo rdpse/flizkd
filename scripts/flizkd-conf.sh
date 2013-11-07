@@ -1,4 +1,4 @@
-usernamevar=`cat flizbox/user`
+usernamevar=`cat flizkd/user`
 passok=no
 var1=no
 sshportmod=none
@@ -6,7 +6,7 @@ portcheck=0
 until [[ $var1 == carryon ]]; do
 clear
 echo
-echo "Welcome to the flizfk post-install script!"
+echo "Welcome to the Flizkd post-install script!"
 echo
 echo "Choose what you want to do:"
 echo 
@@ -55,7 +55,7 @@ case $passvar2 in
 esac
 done
 if [ $passok = "yes" ]; then
-python /root/scripts/htdigest.py -c -b /etc/lighttpd/.passwd "Authenticated Users" $usernamevar $passvar && echo -n "New Password accepted! Press [ENTER] to continue.." && read
+python /root/flizkd/scripts/htdigest.py -c -b /etc/lighttpd/.passwd "Authenticated Users" $usernamevar $passvar && echo -n "New Password accepted! Press [ENTER] to continue.." && read
 fi
 ;;
 "3")
@@ -137,7 +137,7 @@ esac
 done
 if [ $passok = "yes" ]; then
 echo $dpassvar >/root/pass.txt
-python /root/scripts/chdelpass.py /home/$usernamevar/.config/deluge
+python /root/flizkd/scripts/chdelpass.py /home/$usernamevar/.config/deluge
 echo "A reboot is required to reflect your new password change" && echo && echo -n "Press [ENTER] to return to the main menu" && read
 shred -n 6 -u -z /root/pass.txt
 fi
