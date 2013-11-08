@@ -21,11 +21,11 @@ adlport=$(perl -e 'print int(rand(65000-64990))+64990')
 
 clear
 echo
-echo `tput bold``tput sgr 0 1`"Flizkd 1.0"`tput sgr0`" https://github.com/mindfk/flizkd/"
+echo `tput bold``tput sgr 0 1`"Flizkd 1.0"`tput sgr0`" - https://github.com/mindfk/flizkd/"
 echo
 echo "This script installs the newest versions of rtorrent, rutorrent + plugins, autodl-irssi,"
 echo "lighttpd and FTP (vsftpd). It'll also create a web download folder and a SSL certificate."
-echo "You can also choose to instal Deluge instead of rTorrent."
+echo "You can choose to instal Deluge instead of rTorrent if you wish."
 echo "Optional: ZNC and Webmin."
 echo
 echo "Once you have installed the seedbox, you can run this script again at a later"
@@ -224,9 +224,6 @@ echo "thispw=\`perl -e 'print crypt(\""$passvar"\", \"salt\"),\"\\n\"'\`" >tmp
 echo "useradd "$usernamevar "-s\/bin\/bash -U -m -p\$thispw" >>tmp
 bash tmp
 shred -n 6 -u -z tmp
-if [$kscheck = "kimsufi" ]; then
-   rm .ssh/authorized_keys2
-fi
 echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
 echo $usernamevar > /root/flizkd/user
 
@@ -320,6 +317,7 @@ cd /root/flizkd/scripts
 
 if [ $kscheck = "kimsufi" ]; then
    tune2fs -m .5 /dev/sda2
+   rm .ssh/authorized_keys2
 fi
 
 add_deluge_cron=no
@@ -335,12 +333,12 @@ if [ $deluge_yn = "yes" ]; then
       if [ $ub1011 = "yes" ]; then
          apt-get install -y python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako
          cd /root/flizkd/source
-         wget http://download.deluge-torrent.org/source/deluge-1.3.6.tar.gz && tar zxfv deluge-1.3.6.tar.gz
-         rm deluge-1.3.6.tar.gz
+            wget http://download.deluge-torrent.org/source/deluge-1.3.6.tar.gz && tar zxfv deluge-1.3.6.tar.gz
+            rm deluge-1.3.6.tar.gz
          cd deluge-1.3.6
-         python setup.py clean -a
-         python setup.py build
-         python setup.py install
+            python setup.py clean -a
+            python setup.py build
+            python setup.py install
        else
          add-apt-repository -y ppa:deluge-team/ppa
          apt-get update -y
@@ -349,18 +347,18 @@ if [ $deluge_yn = "yes" ]; then
     fi
     if [ $debian = "yes" ]; then
        cd /root/flizkd/source
-       wget http://download.deluge-torrent.org/source/deluge-1.3.6.tar.gz && tar xvzf deluge-1.3.6.tar.gz
-       rm deluge-1.3.6.tar.gz
+          wget http://download.deluge-torrent.org/source/deluge-1.3.6.tar.gz && tar xvzf deluge-1.3.6.tar.gz
+          rm deluge-1.3.6.tar.gz
        cd deluge-1.3.6
-       python setup.py clean -a
-       python setup.py build
-       python setup.py install
+          python setup.py clean -a
+          python setup.py build
+          python setup.py install
     fi
        
     echo $passvar >/root/pass.txt
     cd /root/flizkd/scripts
-    python chdelpass.py /home/$usernamevar/.config/deluge
-    shred -n 6 -u -z /root/pass.txt
+       python chdelpass.py /home/$usernamevar/.config/deluge
+       shred -n 6 -u -z /root/pass.txt
 fi
 
 cd /root/flizkd/source
@@ -371,9 +369,9 @@ if [ $znc_yn = "yes" ]; then
    tar -xzvf znc-latest.tar.gz
    rm znc-latest.tar.gz
    cd znc*
-   ./configure --enable-extra
-   make
-   make install
+      ./configure --enable-extra
+      make
+      make install
 fi
 
 if [ $webmin_yn = "yes" ]; then
