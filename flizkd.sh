@@ -290,6 +290,7 @@ cp /etc/apt/sources.list /etc/apt/sources.list.back
     repolink=$(grep wheezy /etc/apt/sources.list | head -n 1 | awk '{ printf $2 }')
         if [ -z $nonfreetf ]; then
         echo "deb "$repolink" wheezy non-free" >> /etc/apt/sources.list
+        echo "deb-src "$repolink" wheezy non-free" >> /etc/apt/sources.list
         fi
     apt-get -y --force-yes install libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev lighttpd nano screen subversion git libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
     wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.64-1_amd64.Debian_7.0.deb -O mediainfo.deb
