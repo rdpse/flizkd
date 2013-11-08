@@ -1,17 +1,17 @@
-#!/bin/bash
+!/bin/bash
 
-#if [ ! -f /etc/flizkd1.0 ]
-#then
-#    if [ -f /etc/flizkd0.[0-9]
-#    then
-#        echo "You seem to have already installed an earlier version of flizkd on your system..."
-#        echo "Please reinstall your server if you wish to install flizkd 1.0."
-#        exit 0
-#    fi
-#else
-#    bash /root/flizkd/scripts/flizkd-conf.sh
-#    exit 0
-#fi
+if [ ! -f /etc/flizkd1.0 ]
+then
+    if [ -f /etc/flizkd0.[0-9]
+    then
+        echo "You seem to have already installed an earlier version of flizkd on your system..."
+        echo "Please reinstall your server if you wish to install flizkd 1.0."
+        exit 0
+    fi
+else
+    bash /root/flizkd/scripts/flizkd-conf.sh
+    exit 0
+fi
 
 distro=$(lsb_release -ds | awk '{ printf $0 }')
 os_version=$(lsb_release -rs | awk '{ printf $0 }')
@@ -225,7 +225,9 @@ echo "thispw=\`perl -e 'print crypt(\""$passvar"\", \"salt\"),\"\\n\"'\`" >tmp
 echo "useradd "$usernamevar "-s\/bin\/bash -U -m -p\$thispw" >>tmp
 bash tmp
 shred -n 6 -u -z tmp
+if [$kscheck = "kimsufi" ]; then
 rm .ssh/authorized_keys2
+fi
 echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
 echo $usernamevar > /root/flizkd/user
 
@@ -266,39 +268,39 @@ wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.62-1_amd64.Debian_
 dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
 fi
 
-if [ $debian = "yes" ]; then
+if [ $deb6 = "yes" ]; then
 apt-get update -y
 apt-get purge -y --force-yes vsftpd
 apt-get clean && apt-get autoclean
 cp /etc/apt/sources.list /etc/apt/sources.list.back  
+nonfreetf=$(grep non-free /etc/apt/sources.list)
+repolink=$(grep squeeze /etc/apt/sources.list | head -n 1 | awk '{ printf $2 }')
+if [ -z $nonfreetf ]; then
+echo "deb "$repolink" squeeze non-free" >> /etc/apt/sources.list
+fi
+apt-get -y install libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev lighttpd nano screen subversion git libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
+wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.58-1_amd64.Debian_6.0.deb -O mediainfo.deb
+wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.58-1_amd64.Debian_6.0.deb -O libmediainfo.deb
+wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.26-1_amd64.Debian_6.0.deb -O libzen.deb
+dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
+fi
 
-    if [ $deb6 = "yes" ]; then
-    nonfreetf=$(grep non-free /etc/apt/sources.list)
-    repolink=$(grep squeeze /etc/apt/sources.list | head -n 1 | awk '{ printf $2 }')
-        if [ -z $nonfreetf ]; then
-        echo "deb "$repolink" squeeze non-free" >> /etc/apt/sources.list
-        fi
-    apt-get -y --force-yes install libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev lighttpd nano screen subversion git libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
-    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.58-1_amd64.Debian_6.0.deb -O mediainfo.deb
-    wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.58-1_amd64.Debian_6.0.deb -O libmediainfo.deb
-    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.26-1_amd64.Debian_6.0.deb -O libzen.deb
-    dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
-    fi
-
-    if [ $deb7 = "yes" ]; then
-    nonfreetf=$(grep non-free /etc/apt/sources.list)
-    repolink=$(grep wheezy /etc/apt/sources.list | head -n 1 | awk '{ printf $2 }')
-        if [ -z $nonfreetf ]; then
-        echo "deb "$repolink" wheezy non-free" >> /etc/apt/sources.list
-        echo "deb-src "$repolink" wheezy non-free" >> /etc/apt/sources.list
-        fi
-    apt-get -y --force-yes install libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev lighttpd nano screen subversion git libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
-    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.64-1_amd64.Debian_7.0.deb -O mediainfo.deb
-    wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.64-1_amd64.Debian_7.0.deb -O libmediainfo.deb
-    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.Debian_7.0.deb -O libzen.deb
-    wget http://www.packetfence.org/downloads/PacketFence/debian-feature-packaging_wheezy_ubuntu/pool/wheezy/libd/libdigest-sha1-perl/libdigest-sha1-perl_2.13-1_amd64.deb -O libdigest-sha1-perl.deb
-    dpkg -i libzen.deb libmediainfo.deb mediainfo.deb libdigest-sha1-perl.deb
-    fi
+if [ $deb7 = "yes" ]; then
+apt-get update -y
+apt-get purge -y --force-yes vsftpd
+apt-get clean && apt-get autoclean
+cp /etc/apt/sources.list /etc/apt/sources.list.back  
+nonfreetf=$(grep non-free /etc/apt/sources.list)
+repolink=$(grep wheezy /etc/apt/sources.list | head -n 1 | awk '{ printf $2 }')
+if [ -z $nonfreetf ]; then
+echo "deb "$repolink" wheezy non-free" >> /etc/apt/sources.list
+fi
+apt-get -y install libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev lighttpd nano screen subversion git libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
+wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.64-1_amd64.Debian_7.0.deb -O mediainfo.deb
+wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.64-1_amd64.Debian_7.0.deb -O libmediainfo.deb
+wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.Debian_7.0.deb -O libzen.deb
+wget http://www.packetfence.org/downloads/PacketFence/debian-feature-packaging_wheezy_ubuntu/pool/wheezy/libd/libdigest-sha1-perl/libdigest-sha1-perl_2.13-1_amd64.deb -O libdigest-sha1-perl.deb
+dpkg -i libzen.deb libmediainfo.deb mediainfo.deb libdigest-sha1-perl.deb
 fi
 
 cd /root/flizkd/cfg
