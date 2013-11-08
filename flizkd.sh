@@ -1,17 +1,17 @@
 #!/bin/bash
 
-if [ ! -f /etc/flizkd1.0 ]
-then
-    if [ -f /etc/flizkd0.[0-9]
-    then
-        echo "You seem to have already installed an earlier version of flizkd on your system..."
-        echo "Please reinstall your server if you wish to install flizkd 1.0."
-        exit 0
-    fi
-else
-    bash /root/flizkd/scripts/flizkd-conf.sh
-    exit 0
-fi
+#if [ ! -f /etc/flizkd1.0 ]
+#then
+#    if [ -f /etc/flizkd0.[0-9]
+#    then
+#        echo "You seem to have already installed an earlier version of flizkd on your system..."
+#        echo "Please reinstall your server if you wish to install flizkd 1.0."
+#        exit 0
+#    fi
+#else
+#    bash /root/flizkd/scripts/flizkd-conf.sh
+#    exit 0
+#fi
 
 distro=$(lsb_release -ds | awk '{ printf $0 }')
 os_version=$(lsb_release -rs | awk '{ printf $0 }')
@@ -173,7 +173,7 @@ echo "You will now be able to select optional addons for your seedbox..."
 echo
 
 until [[ $var7 == continue ]]; do
-echo -n "Which client do you want to install? (rTorrent/Deluge)"`tput setaf 3``tput bold`" [rTorrent]: "`tput sgr0`
+echo -n "Which client do you want to install? (rTorrent/Deluge)"`tput setaf 3``tput bold`"[rTorrent]: "`tput sgr0`
 read ex1
 case $ex1 in
         [rR][tT][oO][rR][eE][nN][tT] | "")
