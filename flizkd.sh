@@ -176,7 +176,7 @@ until [[ $var7 == continue ]]; do
 echo -n "Which client do you want to install? (rTorrent/Deluge)"`tput setaf 3``tput bold`" [rTorrent]: "`tput sgr0`
 read ex1
 case $ex1 in
-        [rR][tT][oO][rR][eE][nN][tT] | "")
+        [rR][tT][oO][rR][rR][eE][nN][tT] | "")
                 rtorrent_yn=yes
                 deluge_yn=no
                 var7=continue
