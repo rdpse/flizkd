@@ -96,7 +96,7 @@ case $os_version in
         ub1011=no
         ub1011x=no
         ;;
-        7)
+        7.[0-9])
         var9=yes
         debian=yes
         deb7=yes
@@ -173,7 +173,7 @@ echo "You will now be able to select optional addons for your seedbox..."
 echo
 
 until [[ $var7 == continue ]]; do
-echo -n "Which client do you want to install? (rTorrent/Deluge)"`tput setaf 3``tput bold`"[rTorrent]: "`tput sgr0`
+echo -n "Which client do you want to install? (rTorrent/Deluge)"`tput setaf 3``tput bold`" [rTorrent]: "`tput sgr0`
 read ex1
 case $ex1 in
         [rR][tT][oO][rR][eE][nN][tT] | "")
