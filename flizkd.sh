@@ -61,6 +61,7 @@ case $os_version in
         var9=yes
         ub1011=no
         ub1011x=no
+        usesha=yes
         ;;
         "12.10")
         ubuntu=yes
@@ -69,6 +70,7 @@ case $os_version in
         var9=yes
         ub1011=no
         ub1011x=no
+        usesha=yes
         ;;
         "13.04")
         ubuntu=yes
@@ -77,6 +79,7 @@ case $os_version in
         var9=yes
         ub1011=no
         ub1011x=no
+        usesha=yes
         ;;
         "13.10")
         ubuntu=yes
@@ -85,6 +88,7 @@ case $os_version in
         var9=yes
         ub1011=no
         ub1011x=no
+        usesha=yes
         ;;
         6.0.[0-9])
         var9=yes
@@ -103,6 +107,7 @@ case $os_version in
         ubuntu=no
         ub1011=no
         ub1011x=no
+        usesha=yes
         ;;
         *)
         echo `tput setaf 1``tput bold`"This OS is not yet supported! (EXITING)"`tput sgr0`
@@ -249,7 +254,7 @@ if [ $os_version = "12.04" ]; then
    dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
 fi 
 
-if [ $os_version = "12.10" ]; then
+if [ $os_version = "12.10" ] || [ $os_version = "13.04" ] || [ $os_version = "13.10" ]; then
    apt-get install -y python-software-properties
    apt-get update -y
    apt-get install -y mediainfo subversion git libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl lighttpd php5 php5-cgi php5-cli php5-common php5-curl libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap
@@ -273,9 +278,9 @@ if [ $deb6 = "yes" ]; then
       echo "deb "$repolink" squeeze non-free" >> /etc/apt/sources.list
    fi
    apt-get update -y
-   apt-get purge -y --force-yes vsftpd
+   apt-get purge -y --force-yes vsftpd lighttpd apache2 apache2-utils
    apt-get clean && apt-get autoclean
-   apt-get -y install libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev lighttpd nano screen subversion git libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
+   apt-get -y --force-yes install libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev lighttpd nano screen subversion git libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.58-1_amd64.Debian_6.0.deb -O mediainfo.deb
    wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.58-1_amd64.Debian_6.0.deb -O libmediainfo.deb
    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.26-1_amd64.Debian_6.0.deb -O libzen.deb
@@ -296,8 +301,8 @@ if [ $deb7 = "yes" ]; then
    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.64-1_amd64.Debian_7.0.deb -O mediainfo.deb
    wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.64-1_amd64.Debian_7.0.deb -O libmediainfo.deb
    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.Debian_7.0.deb -O libzen.deb
-   wget http://www.packetfence.org/downloads/PacketFence/debian-feature-packaging_wheezy_ubuntu/pool/wheezy/libd/libdigest-sha1-perl/libdigest-sha1-perl_2.13-1_amd64.deb -O libdigest-sha1-perl.deb
-   dpkg -i libzen.deb libmediainfo.deb mediainfo.deb libdigest-sha1-perl.deb
+   #wget http://www.packetfence.org/downloads/PacketFence/debian-feature-packaging_wheezy_ubuntu/pool/wheezy/libd/libdigest-sha1-perl/libdigest-sha1-perl_2.13-1_amd64.deb -O libdigest-sha1-perl.deb
+   dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
 fi
 
 cd /root/flizkd/cfg
@@ -396,21 +401,21 @@ if [ $rtorrent_yn = "yes" ]; then
       svn co http://svn.code.sf.net/p/xmlrpc-c/code/advanced xmlrpc-c
       wget http://libtorrent.rakshasa.no/downloads/libtorrent-0.13.3.tar.gz && tar zxfv libtorrent-0.13.3.tar.gz
       wget http://libtorrent.rakshasa.no/downloads/rtorrent-0.9.3.tar.gz && tar zxfv rtorrent-0.9.3.tar.gz
-   cd xmlrpc-c
-      ./configure
-      make
-      make install
-   cd ../libtorrent-0.13.3
-      chmod +x configure  
-      ./configure
-      make
-      make install
-   cd ../rtorrent-0.9.3
-      chmod +x configure 
-      ./configure --with-xmlrpc-c
-      make
-      make install
-      ldconfig
+      cd xmlrpc-c
+         ./configure
+         make
+         make install
+      cd ../libtorrent-0.13.3
+         chmod +x configure  
+         ./configure
+         make
+         make install
+      cd ../rtorrent-0.9.3
+         chmod +x configure 
+         ./configure --with-xmlrpc-c
+         make
+         make install
+         ldconfig
    
    cd ../
       rm -rf xmlrpc-c libtorrent* rtorrent*
@@ -418,19 +423,19 @@ if [ $rtorrent_yn = "yes" ]; then
    cd /var/www/
       touch index.html
       mkdir webdownload
-   cd webdownload
-      ln -s /home/$usernamevar/downloads
+      cd webdownload
+         ln -s /home/$usernamevar/downloads
    cd /var/www
       svn co http://rutorrent.googlecode.com/svn/trunk/rutorrent
-   cd /var/www/rutorrent
-      rm -rf plugins/
-      svn co http://rutorrent.googlecode.com/svn/trunk/plugins
-   cd plugins/
-      svn co https://autodl-irssi.svn.sourceforge.net/svnroot/autodl-irssi/trunk/rutorrent/autodl-irssi
-      svn co http://rutorrent-pausewebui.googlecode.com/svn/trunk/ pausewebui
-      svn co http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
-      svn co http://rutorrent-instantsearch.googlecode.com/svn/trunk/ rutorrent-instantsearch
-      svn co http://svn.rutorrent.org/svn/filemanager/trunk/filemanager
+      cd /var/www/rutorrent
+         rm -rf plugins/
+         svn co http://rutorrent.googlecode.com/svn/trunk/plugins
+         cd plugins/
+            svn co https://autodl-irssi.svn.sourceforge.net/svnroot/autodl-irssi/trunk/rutorrent/autodl-irssi
+            svn co http://rutorrent-pausewebui.googlecode.com/svn/trunk/ pausewebui
+            svn co http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
+            svn co http://rutorrent-instantsearch.googlecode.com/svn/trunk/ rutorrent-instantsearch
+            svn co http://svn.rutorrent.org/svn/filemanager/trunk/filemanager
    chown -R www-data:www-data /var/www/
    chmod -R 755 /var/www
    chmod -R 777 /var/www/rutorrent/share
@@ -470,12 +475,7 @@ if [ $rtorrent_yn = "yes" ]; then
       cp autodl-irssi.pl autorun/
       mv /root/flizkd/cfg/iFR.tracker AutodlIrssi/trackers/
 
-   if [ $os_version = "12.04" ]; then
-      cp AutodlIrssi/MatchedRelease.pm matchtemp
-      sed 's/Digest::SHA1 qw/Digest::SHA qw/' matchtemp > AutodlIrssi/MatchedRelease.pm
-   fi
-
-   if [ $os_version = "12.10" ]; then
+   if [ $usesha = "yes" ]; then
       cp AutodlIrssi/MatchedRelease.pm matchtemp
       sed 's/Digest::SHA1 qw/Digest::SHA qw/' matchtemp > AutodlIrssi/MatchedRelease.pm
    fi
