@@ -254,7 +254,7 @@ if [ $os_version = "12.04" ]; then
    dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
 fi 
 
-if [ $os_version = "12.10" ] || [ $os_version = "13.04" ] || [ $os_version = "13.10" ]; then
+if [[ $os_version = "12.10" || $os_version = "13.04" || $os_version = "13.10" ]]; then
    apt-get install -y python-software-properties
    apt-get update -y
    apt-get install -y mediainfo subversion git libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl lighttpd php5 php5-cgi php5-cli php5-common php5-curl libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap
