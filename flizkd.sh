@@ -13,8 +13,8 @@
 #    exit 0
 #fi
 
-distro=$(lsb_release -ds | awk '{ printf $0 }')
-os_version=$(lsb_release -rs | awk '{ printf $0 }')
+distro=$(lsb_release -ds | awk '{ printf $2" "$3" "$4 }')
+os_version=$(lsb_release -ds | awk '{ printf $3 }')
 arch=$(uname -m)
 kscheck=$(hostname | cut -d. -f2)
 IP=$(ifconfig eth0 | grep 'inet addr' | awk -F: '{ printf $2 }' | awk '{ printf $1 }')
@@ -96,7 +96,7 @@ case $os_version in
         ub1011=no
         ub1011x=no
         ;;
-        7.[0-9])
+        7)
         var9=yes
         debian=yes
         deb7=yes
