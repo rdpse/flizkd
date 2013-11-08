@@ -290,7 +290,7 @@ if [ $deb7 = "yes" ]; then
       echo "deb "$repolink" wheezy non-free" >> /etc/apt/sources.list
    fi
    apt-get update -y
-   apt-get purge -y --force-yes vsftpd
+   apt-get purge -y --force-yes vsftpd lighttpd apache2 apache2-utils
    apt-get clean && apt-get autoclean
    apt-get -y --force-yes install libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev lighttpd nano screen subversion git libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.64-1_amd64.Debian_7.0.deb -O mediainfo.deb
@@ -321,6 +321,7 @@ if [ $kscheck = "kimsufi" ]; then
 fi
 
 add_deluge_cron=no
+mkdir /root/flizkd/source
 
 if [ $deluge_yn = "yes" ]; then
    mkdir -p /home/$usernamevar/.config/deluge
@@ -390,22 +391,29 @@ if [ $webmin_yn = "yes" ]; then
    fi
 fi
 
-if [ $rtorrent_yn = "yes" ]; then
+if [ $rtorrent_yn = "yes" ]; then 
    cd /root/flizkd/source
       svn co http://svn.code.sf.net/p/xmlrpc-c/code/advanced xmlrpc-c
+      wget http://libtorrent.rakshasa.no/downloads/libtorrent-0.13.3.tar.gz && tar zxfv libtorrent-0.13.3.tar.gz
+      wget http://libtorrent.rakshasa.no/downloads/rtorrent-0.9.3.tar.gz && tar zxfv rtorrent-0.9.3.tar.gz
    cd xmlrpc-c
       ./configure
       make
       make install
    cd ../libtorrent-0.13.3
+      chmod +x configure  
       ./configure
       make
       make install
    cd ../rtorrent-0.9.3
+      chmod +x configure 
       ./configure --with-xmlrpc-c
       make
       make install
       ldconfig
+   
+   cd ../
+      rm -rf xmlrpc-c libtorrent* rtorrent*
 
    cd /var/www/
       touch index.html
