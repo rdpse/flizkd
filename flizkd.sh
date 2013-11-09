@@ -1,11 +1,12 @@
 #!/bin/bash
+logfile=/root/script.log
+exec > $logfile 2>&1
 
-if [ ! -f /etc/flizkd1.0 ]
-then
-   if [ -f /etc/flizkd0.[0-9] ]; then
-        echo "You seem to have already installed an earlier version of flizkd on your system..."
-        echo "Please reinstall your server if you wish to install flizkd 1.0."
-        exit 0
+if [ ! -f /etc/flizkd1.0 ]; then
+   if [ -d /root/flizkd ]; then
+      echo "You seem to have already installed an earlier version of flizkd on your system..."
+      echo "Please reinstall your server if you wish to install "`tput bold``tput sgr 0 1`"Flizkd 1.0"`tput sgr0`"."
+      exit 0
    fi
 else
    bash /root/flizkd/scripts/flizkd-conf.sh
