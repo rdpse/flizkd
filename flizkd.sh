@@ -1,9 +1,7 @@
 #!/bin/bash
-logfile=/root/script.log
-exec > $logfile 2>&1
 
 if [ ! -f /etc/flizkd1.0 ]; then
-   if [ -d /root/flizkd ]; then
+   if [ -f /root/flizkd/installed ]; then
       echo "You seem to have already installed an earlier version of flizkd on your system..."
       echo "Please reinstall your server if you wish to install "`tput bold``tput sgr 0 1`"Flizkd 1.0"`tput sgr0`"."
       exit 0
@@ -277,7 +275,7 @@ fi
 if [ $deb6 = "yes" ]; then
    cp /etc/apt/sources.list /etc/apt/sources.list.back  
    nonfreetf=$(grep non-free /etc/apt/sources.list)
-   repolink=$(grep squeeze /etc/apt/sources.list | head -n 2 | awk '{ printf $2 }')
+   repolink=$(grep squeeze /etc/apt/sources.list | tail -n 1 | awk '{ printf $2 }')
    if [ -z $nonfreetf ]; then
       echo "deb "$repolink" squeeze non-free" >> /etc/apt/sources.list
    fi
@@ -294,7 +292,7 @@ fi
 if [ $deb7 = "yes" ]; then
    cp /etc/apt/sources.list /etc/apt/sources.list.back  
    nonfreetf=$(grep non-free /etc/apt/sources.list)
-   repolink=$(grep wheezy /etc/apt/sources.list | head -n 2 | awk '{ printf $2 }')    
+   repolink=$(grep wheezy /etc/apt/sources.list | tail -n 1 | awk '{ printf $2 }')    
    if [ -z $nonfreetf ]; then
       echo "deb "$repolink" wheezy non-free" >> /etc/apt/sources.list
    fi
@@ -560,6 +558,7 @@ echo `tput setaf 2``tput bold`"Rebooting... Wait a couple of minutes before tryi
 echo
 
 sed -i 's/Port 22/Port 22 # fliz_ssh/' /etc/ssh/sshd_config
+touch /root/flizkd/installed
 touch /etc/flizkd1.0
 
 reboot
