@@ -111,41 +111,11 @@ done
 
 echo "You are using "$distro
 
-#####
-#TODO: pass function
-####################
 if [[ $curuser != 0 ]]; then
    echo
    echo `tput setaf 1``tput bold`"Please run this script as root."`tput sgr0`
    echo
    exit 1
-else
-   until [[ $var4 == continue ]]; do
-         echo -n "Would you like to change your root password? (Yes/No)"`tput setaf 3``tput bold`"[NO]: "`tput sgr0`
-         read ex4
-         case $ex4 in
-                 [yY] | [yY][Ee][Ss])
-                      echo -n "Please choose a new password: "`tput setaf 0``tput setab 0`
-                      read rootpass
-                      echo -n `tput sgr0`"Retype password: "`tput setaf 0``tput setab 0`
-                      read rootpass2
-                      tput sgr0
-                      case $rootpass2 in
-                              $rootpass
-                              var4=carryon
-                              ;;
-                              *)
-                              echo -n "Passwords don't match."
-                              sleep 0.5 && echo -n "." &&  sleep 0.5 && echo -n "." && sleep 0.5 && echo -n "." && sleep 0.5 && echo -n "." && sleep 0.5 && echo -n "."
-                              sleep 1 && echo
-                              ;;
-                      esac
-                 [nN] | [nN][Oo] | "")
-                      echo "Root password not changed."
-                      var4=continue
-                      ;;           
-         esac
-   done     
 fi
 
 if [[ $arch != "x86_64" ]]; then
@@ -255,9 +225,7 @@ done
 
 echo
 
-echo "rootpw=\`perl -e 'print crypt(\""$rootpass"\", \"salt\"),\"\\n\"'\`" >tmp
 echo "userpw=\`perl -e 'print crypt(\""$passvar"\", \"salt\"),\"\\n\"'\`" >>tmp
-echo "\`perl -e 'system ("/bin/echo \"root:$rootpass\" | $ROOTCMD chpasswd --md5")'\`" >>tmp
 echo "useradd "$usernamevar "-s\/bin\/bash -U -m -p\$userpw" >>tmp
 bash tmp
 shred -n 6 -u -z tmp
