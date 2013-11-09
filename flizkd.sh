@@ -18,15 +18,16 @@ arch=$(uname -m)
 kscheck=$(hostname | cut -d. -f2)
 IP=$(ifconfig eth0 | grep 'inet addr' | awk -F: '{ printf $2 }' | awk '{ printf $1 }')
 adlport=$(perl -e 'print int(rand(65000-64990))+64990')
+curuser=$(id -u | awk '{ printf $0 }')
 
 clear
 echo
 echo `tput bold``tput sgr 0 1`"Flizkd 1.0"`tput sgr0`" - https://github.com/mindfk/flizkd/"
 echo
-echo "This script installs the newest versions of rtorrent, rutorrent + plugins, autodl-irssi,"
-echo "lighttpd and FTP (vsftpd). It'll also create a web download folder and a SSL certificate."
-echo "You can choose to instal Deluge instead of rTorrent if you wish."
-echo "Optional: ZNC and Webmin."
+echo "This script installs the newest versions of rtorrent, rutorrent + plugins,"
+echo "autodl-irssi, lighttpd and FTP (vsftpd). It'll also create a web download"
+echo "folder and a SSL certificate. You can choose to instal Deluge instead of"
+echo "rTorrent if you wish. Optional: ZNC and Webmin."
 echo
 echo "Once you have installed the seedbox, you can run this script again at a later"
 echo "time and you will be given configuration options (password changes etc.)"
@@ -72,16 +73,7 @@ case $os_version in
         ub1011x=no
         usesha=yes
         ;;
-        "13.04")
-        ubuntu=yes
-        deb6=no
-        deb7=no
-        var9=yes
-        ub1011=no
-        ub1011x=no
-        usesha=yes
-        ;;
-        "13.10")
+        "13.04" | "13.10")
         ubuntu=yes
         deb6=no
         deb7=no
@@ -118,6 +110,17 @@ esac
 done
 
 echo "You are using "$distro
+
+if [[ $curuser != 0 ]]
+   echo `tput setaf 1``tput bold`"Please run the script as root."`tput sgr0`
+   echo
+   exit 1
+else
+   echo
+   echo "Change your root password..."
+   echo
+   passwd
+fi
 
 if [[ $arch != "x86_64" ]]; then
    echo `tput setaf 1``tput bold`"Not using 64 bit version, reinstall your distro with 64 bit version and try this script again. :( (EXITING)"`tput sgr0`
@@ -301,7 +304,6 @@ if [ $deb7 = "yes" ]; then
    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.64-1_amd64.Debian_7.0.deb -O mediainfo.deb
    wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.64-1_amd64.Debian_7.0.deb -O libmediainfo.deb
    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.Debian_7.0.deb -O libzen.deb
-   #wget http://www.packetfence.org/downloads/PacketFence/debian-feature-packaging_wheezy_ubuntu/pool/wheezy/libd/libdigest-sha1-perl/libdigest-sha1-perl_2.13-1_amd64.deb -O libdigest-sha1-perl.deb
    dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
 fi
 
