@@ -1,8 +1,8 @@
-!/bin/bash
+#!/bin/bash
 
 if [ ! -f /etc/flizkd1.0 ]
 then
-   if [ -f /etc/flizkd0.[0-9]; then
+   if [ -f /etc/flizkd0.[0-9] ]; then
         echo "You seem to have already installed an earlier version of flizkd on your system..."
         echo "Please reinstall your server if you wish to install flizkd 1.0."
         exit 0
