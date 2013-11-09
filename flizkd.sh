@@ -256,8 +256,8 @@ done
 echo
 
 echo "rootpw=\`perl -e 'print crypt(\""$rootpass"\", \"salt\"),\"\\n\"'\`" >tmp
-echo "userpw=\`perl -e 'print crypt(\""$passvar"\", \"salt\"),\"\\n\"'\`" >tmp
-echo "\`perl -e 'system ("/bin/echo \"root:$rootpass\" | $ROOTCMD chpasswd --md5")'\`" >tmp
+echo "userpw=\`perl -e 'print crypt(\""$passvar"\", \"salt\"),\"\\n\"'\`" >>tmp
+echo "\`perl -e 'system ("/bin/echo \"root:$rootpass\" | $ROOTCMD chpasswd --md5")'\`" >>tmp
 echo "useradd "$usernamevar "-s\/bin\/bash -U -m -p\$userpw" >>tmp
 bash tmp
 shred -n 6 -u -z tmp
