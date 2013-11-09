@@ -46,6 +46,7 @@ case $os_version in
         deb7=no
         var9=yes
         ub1011x=yes
+        usesha=no
         ;;
         "11.10")
         ubuntu=yes
@@ -54,6 +55,7 @@ case $os_version in
         var9=yes
         ub1011=no
         ub1011x=yes
+        usesha=no
         ;;
         "12.04")
         ubuntu=yes
@@ -90,6 +92,7 @@ case $os_version in
         ubuntu=no
         ub1011=no
         ub1011x=no
+        usesha=no
         ;;
         7.[0-9])
         var9=yes
@@ -225,7 +228,7 @@ done
 
 echo
 
-echo "userpw=\`perl -e 'print crypt(\""$passvar"\", \"salt\"),\"\\n\"'\`" >>tmp
+echo "userpw=\`perl -e 'print crypt(\""$passvar"\", \"salt\"),\"\\n\"'\`" >tmp
 echo "useradd "$usernamevar "-s\/bin\/bash -U -m -p\$userpw" >>tmp
 bash tmp
 shred -n 6 -u -z tmp
