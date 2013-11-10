@@ -11,7 +11,7 @@ else
    exit 0
 fi
 
-apt-get -y install lsb-release
+apt-get -y install lsb-release > /dev/null
 clear
 
 distro=$(lsb_release -ds)
