@@ -178,37 +178,58 @@ echo
 echo "You will now be able to select optional addons for your seedbox..."
 echo
 
-until [[ $var7 == continue ]]; do
-      echo -n "Which client do you want to install? (rTorrent/Deluge)"`tput setaf 3``tput bold`" [rTorrent]: "`tput sgr0`
-      read ex1
-      case $ex1 in
-              [rR][tT][oO][rR][rR][eE][nN][tT] | "")
-                     rtorrent_yn=yes
-                     deluge_yn=no
-                     var7=continue
-                     ;;
-              [dD][eE][lL][uU][gG][eE] )
-                      rtorrent_yn=no
-                      deluge_yn=yes
-                      var7=continue
-                      ;;
-      esac
+## cont_var app num yn_var
+optapp () {
+       until [[ $1 == continue ]]; do
+             echo -n "Install $2? (Yes/No)"`tput setaf 3``tput bold`"[YES]: "`tput sgr0`
+             read $3
+             case \$$3 in
+                  [yY] | [yY][eE][sS] | "")
+                         $4=yes
+                         $1=continue
+                         ;;
+                  [nN] | [nN][oO] )
+                         $4=no
+                         $1=continue
+                         ;;
+             esac
 done
+} 
 
-until [[ $var6 == continue ]]; do
-      echo -n "Install ZNC? (Yes/No)"`tput setaf 3``tput bold`"[NO]: "`tput sgr0`
-      read ex2
-      case $ex2 in
-              [yY] | [yY][eE][sS])
-                    znc_yn=yes
-                    var6=continue
-                    ;;
-              [nN] | [nN][oO] | "")
-                    znc_yn=no
-                    var6=continue
-                    ;;
-      esac
-done
+optapp "$var7" "Deluge" "ex2" "deluge_yn"
+optapp "$var6" "ZNC" "ex1" "znc_yn"
+
+# until [[ $var7 == continue ]]; do
+#       echo -n "Which client do you want to install? (rTorrent/Deluge)"`tput setaf 3``tput bold`" [rTorrent]: "`tput sgr0`
+#       read ex1
+#       case $ex1 in
+#               [rR][tT][oO][rR][rR][eE][nN][tT] | "")
+#                      rtorrent_yn=yes
+#                      deluge_yn=no
+#                      var7=continue
+#                      ;;
+#               [dD][eE][lL][uU][gG][eE] )
+#                       rtorrent_yn=no
+#                       deluge_yn=yes
+#                       var7=continue
+#                       ;;
+#       esac
+# done
+
+# until [[ $var6 == continue ]]; do
+#       echo -n "Install ZNC? (Yes/No)"`tput setaf 3``tput bold`"[NO]: "`tput sgr0`
+#       read ex2
+#       case $ex2 in
+#               [yY] | [yY][eE][sS])
+#                     znc_yn=yes
+#                     var6=continue
+#                     ;;
+#               [nN] | [nN][oO] | "")
+#                     znc_yn=no
+#                     var6=continue
+#                     ;;
+#       esac
+# done
 
 until [[ $var5 == continue ]]; do
       echo -n "Install Webmin? (Yes/No)"`tput setaf 3``tput bold`"[NO]: "`tput sgr0`
