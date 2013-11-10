@@ -278,6 +278,10 @@ if [ $deb7 = "yes" ]; then
    apt-get -y --force-yes install mediainfo libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev lighttpd nano screen subversion libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
 fi
 
+cd /root
+   mkdir flizkd && cd flizkd
+   svn co https://github.com/mindfk/flizkd/trunk/cfg
+   svn co https://github.com/mindfk/flizkd/trunk/scripts
 cd /root/flizkd/cfg
    /etc/init.d/vsftpd stop
    rm /etc/vsftpd.conf
