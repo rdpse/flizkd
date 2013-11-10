@@ -87,7 +87,7 @@ until [[ $var1 == yes ]]; do
            usesha=no
            var1=yes
            ;;
-           7.[0-9])
+           7 | 7.[0-9])
            debian=yes
            deb7=yes
            deb6=no
@@ -217,6 +217,11 @@ echo $usernamevar > /root/flizkd/user
 
 apt-get update -y
 
+cd /root
+   mkdir flizkd && cd flizkd
+   svn co https://github.com/mindfk/flizkd/trunk/cfg
+   svn co https://github.com/mindfk/flizkd/trunk/scripts
+
 if [ $ubuntu = "yes" ]; then
    echo grub-pc hold | dpkg --set-selections
 else
@@ -251,13 +256,14 @@ if [ $ub1011x = "yes" ]; then
    dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
 fi
 
+if [ $kscheck = "kimsufi" ]; then
+   tune2fs -m .5 /dev/sda2
+   rm .ssh/authorized_keys2
+fi
+
 if [ $deb6 = "yes" ]; then
-   cp /etc/apt/sources.list /etc/apt/sources.list.back  
-   nonfreetf=$(grep non-free /etc/apt/sources.list)
-   repolink=$(grep squeeze /etc/apt/sources.list | tail -n 1 | awk '{ printf $2 }')
-   if [ -z $nonfreetf ]; then
-      echo "deb "$repolink" squeeze non-free" >> /etc/apt/sources.list
-   fi
+   echo "deb http://ftp.debian.org/debian squeeze main contrib non-free" >> /etc/apt/sources.list
+   echo "deb-src http://ftp.debian.org/debian squeeze main contrib non-free" >> /etc/apt/sources.list
    apt-get update -y
    apt-get purge -y --force-yes vsftpd lighttpd apache2 apache2-utils
    apt-get clean && apt-get autoclean
@@ -269,22 +275,14 @@ if [ $deb6 = "yes" ]; then
 fi
 
 if [ $deb7 = "yes" ]; then
-   cp /etc/apt/sources.list /etc/apt/sources.list.back  
-   nonfreetf=$(grep non-free /etc/apt/sources.list)
-   repolink=$(grep wheezy /etc/apt/sources.list | tail -n 1 | awk '{ printf $2 }')    
-   if [ -z $nonfreetf ]; then
-      echo "deb "$repolink" wheezy non-free" >> /etc/apt/sources.list
-   fi
+   echo "deb http://ftp.debian.org/debian wheezy main contrib non-free" >> /etc/apt/sources.list
+   echo "deb-src http://ftp.debian.org/debian wheezy main contrib non-free" >> /etc/apt/sources.list
    apt-get update -y
    apt-get purge -y --force-yes vsftpd
    apt-get clean && apt-get autoclean
    apt-get -y --force-yes install mediainfo libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev lighttpd nano screen subversion libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
 fi
 
-cd /root
-   mkdir flizkd && cd flizkd
-   svn co https://github.com/mindfk/flizkd/trunk/cfg
-   svn co https://github.com/mindfk/flizkd/trunk/scripts
 cd /root/flizkd/cfg
    /etc/init.d/vsftpd stop
    rm /etc/vsftpd.conf
