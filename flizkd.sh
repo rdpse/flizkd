@@ -178,20 +178,20 @@ echo
 echo "You will now be able to select optional addons for your seedbox..."
 echo
 
-until [[ $var7 == continue ]]; do
-      echo -n "Which client do you want to install? (rTorrent/Deluge)"`tput setaf 3``tput bold`" [rTorrent]: "`tput sgr0`
-      read ex1
-      case $ex1 in
-              [rR][tT][oO][rR][rR][eE][nN][tT] | "")
-                     rtorrent_yn=yes
-                     var7=continue
-                     ;;
-              [dD][eE][lL][uU][gG][eE] )
-                      deluge_yn=yes
-                      var7=continue
-                      ;;
-      esac
-done
+# until [[ $var7 == continue ]]; do
+#       echo -n "Which client do you want to install? (rTorrent/Deluge)"`tput setaf 3``tput bold`" [rTorrent]: "`tput sgr0`
+#       read ex1
+#       case $ex1 in
+#               [rR][tT][oO][rR][rR][eE][nN][tT] | "")
+#                      rtorrent_yn=yes
+#                      var7=continue
+#                      ;;
+#               [dD][eE][lL][uU][gG][eE] )
+#                       deluge_yn=yes
+#                       var7=continue
+#                       ;;
+#       esac
+# done
 
 ## cont_var app y_n num case_1 case_2 yn_var
 optapp () {
