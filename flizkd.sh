@@ -36,79 +36,70 @@ echo
 echo "Press control-z if you wish to cancel."
 echo
 
-until [[ $var9 == yes ]]; do
-case $os_version in
-        "10.04" | "11.04")
-        ubuntu=yes
-        ub1011=yes
-        deb6=no
-        deb7=no
-        var9=yes
-        ub1011x=yes
-        usesha=no
-        ;;
-        "11.10")
-        ubuntu=yes
-        deb7=no
-        deb6=no
-        var9=yes
-        ub1011=no
-        ub1011x=yes
-        usesha=no
-        ;;
-        "12.04")
-        ubuntu=yes
-        deb6=no
-        deb7=no
-        var9=yes
-        ub1011=no
-        ub1011x=no
-        usesha=yes
-        ;;
-        "12.10")
-        ubuntu=yes
-        deb6=no
-        deb7=no
-        var9=yes
-        ub1011=no
-        ub1011x=no
-        usesha=yes
-        ;;
-        "13.04" | "13.10")
-        ubuntu=yes
-        deb6=no
-        deb7=no
-        var9=yes
-        ub1011=no
-        ub1011x=no
-        usesha=yes
-        ;;
-        6.0.[0-9])
-        var9=yes
-        debian=yes
-        deb6=yes
-        deb7=no
-        ubuntu=no
-        ub1011=no
-        ub1011x=no
-        usesha=no
-        ;;
-        7.[0-9])
-        var9=yes
-        debian=yes
-        deb7=yes
-        deb6=no
-        ubuntu=no
-        ub1011=no
-        ub1011x=no
-        usesha=yes
-        ;;
-        *)
-        echo `tput setaf 1``tput bold`"This OS is not yet supported! (EXITING)"`tput sgr0`
-        echo
-        exit 1
-        ;;
-esac
+until [[ $var1 == yes ]]; do
+      case $os_version in
+           "10.04" | "11.04")
+           ubuntu=yes
+           ub1011x=yes
+           ub1011=yes          
+           deb6=no
+           deb7=no
+           usersha=no
+           var1=yes
+           ;;
+           "11.10")
+           ubuntu=yes
+           ub1011x=yes
+           ub1011=no
+           deb6=no
+           deb7=no
+           usersha=no
+           var1=yes           
+           ;;
+           "12.04")
+           ubuntu=yes
+           ub1011=no
+           ub1011x=no
+           deb6=no
+           deb7=no
+           usesha=yes
+           var1=yes
+           ;;
+           "12.10" | "13.04" | "13.10")
+           ubuntu=yes
+           ub1011=no
+           ub1011x=no
+           deb6=no
+           deb7=no
+           var1=yes
+           usesha=yes
+           ;;
+           6.0.[0-9])
+           debian=yes
+           deb6=yes
+           deb7=no
+           ubuntu=no
+           ub1011=no
+           ub1011x=no
+           usesha=no
+           var1=yes
+           ;;
+           7.[0-9])
+           debian=yes
+           deb7=yes
+           deb6=no
+           ubuntu=no
+           ub1011=no
+           ub1011x=no
+           usesha=yes
+           var1=yes
+           ;;
+           *)
+           echo `tput setaf 1``tput bold`"This OS is not yet supported! (EXITING)"`tput sgr0`
+           echo
+           exit 1
+           ;;
+      esac
 done
 
 echo "You are using "$distro
@@ -118,9 +109,7 @@ if [[ $curuser != 0 ]]; then
    echo `tput setaf 1``tput bold`"Please run this script as root."`tput sgr0`
    echo
    exit 1
-fi
-
-if [[ $arch != "x86_64" ]]; then
+elif [[ $arch != "x86_64" ]]; then
    echo `tput setaf 1``tput bold`"Not using 64 bit version, reinstall your distro with 64 bit version and try this script again. :( (EXITING)"`tput sgr0`
    echo
    exit 1
@@ -138,7 +127,7 @@ echo `tput sgr0`"making sure 'use symbols' is unchecked. Please do not use any s
 echo "or special characters in your password (these are: &, *, \\, \$, and ?)."
 echo
 
-until [[ $var8 == carryon ]]; do
+until [[ $var2 == carryon ]]; do
       echo -n "Choose username: "
       read usernamevar
       echo -n "Confirm username '"$usernamevar"' (Yes/No)"`tput setaf 3``tput bold`"[YES]: "`tput sgr0`
@@ -152,7 +141,7 @@ until [[ $var8 == carryon ]]; do
                       tput sgr0
                       case $passvar2 in
                               $passvar )
-                              var8=carryon
+                              var2=carryon
                               ;;
                               *)
                               echo -n "Passwords don't match."
@@ -178,73 +167,41 @@ echo
 echo "You will now be able to select optional addons for your seedbox..."
 echo
 
-# until [[ $var7 == continue ]]; do
-#       echo -n "Which client do you want to install? (rTorrent/Deluge)"`tput setaf 3``tput bold`" [rTorrent]: "`tput sgr0`
-#       read ex1
-#       case $ex1 in
-#               [rR][tT][oO][rR][rR][eE][nN][tT] | "")
-#                      rtorrent_yn=yes
-#                      var7=continue
-#                      ;;
-#               [dD][eE][lL][uU][gG][eE] )
-#                       deluge_yn=yes
-#                       var7=continue
-#                       ;;
-#       esac
-# done
-
-## cont_var app y_n num case_1 case_2 yn_var
+## app y_n app_yn
 optapp () {
-       until [[ $1 == continue ]]; do
-             echo -n "Install $2? (Yes/No)"`tput setaf 3``tput bold`"[$3]: "`tput sgr0`
-             read $4
-             case \$$4 in
-                  $5)
-                         $6=yes
-                         $1=continue
+       while true; do
+             echo -n "Install $1? (Yes/No)"`tput setaf 3``tput bold`"[$2]: "`tput sgr0`
+             read answer
+             if [[ $2 == YES ]]; then             
+                case $answer in
+                     [yY] | [yY][eE][sS] | "")
+                         eval $3=yes
+                         break
                          ;;
-                  $6)
-                         $6=no
-                         $1=continue
+                     [nN] | [nN][oO])
+                         eval $3=no
+                         break
                          ;;
-             esac
-done
+                esac
+             else  
+                case $answer in
+                     [yY] | [yY][eE][sS])
+                         eval $3=yes
+                         break
+                         ;;
+                     [nN] | [nN][oO] | "")
+                         eval $3=no
+                         break
+                         ;;
+                esac 
+             fi                 
+       done
 } 
 
-
-optapp "$var1" "rTorrent" "YES" "[yY] | [yY][eE][sS] | \"\"" "[nN] | [nN][oO]" "ex1" "rtorrent_yn"
-# optapp "$var1" "rTorrent" "YES" "[yY] | [yY][eE][sS] | \"\"" "[nN] | [nN][oO]" "ex1" "rtorrent_yn"
-# optapp "$var6" "ZNC" "ex1" "znc_yn"
-
-# until [[ $var6 == continue ]]; do
-#       echo -n "Install ZNC? (Yes/No)"`tput setaf 3``tput bold`"[NO]: "`tput sgr0`
-#       read ex2
-#       case $ex2 in
-#               [yY] | [yY][eE][sS])
-#                     znc_yn=yes
-#                     var6=continue
-#                     ;;
-#               [nN] | [nN][oO] | "")
-#                     znc_yn=no
-#                     var6=continue
-#                     ;;
-#       esac
-# done
-
-# until [[ $var5 == continue ]]; do
-#       echo -n "Install Webmin? (Yes/No)"`tput setaf 3``tput bold`"[NO]: "`tput sgr0`
-#       read ex3
-#       case $ex3 in
-#               [yY] | [yY][eE][sS])
-#                     webmin_yn=yes
-#                     var5=continue
-#                     ;;
-#               [nN] | [nN][oO] | "")
-#                     webmin_yn=no
-#                     var5=continue
-#                     ;;
-#       esac
-# done
+optapp rTorrent YES rtorrent_yn
+optapp Deluge NO deluge_yn
+optapp Webmin NO webmin_yn
+optapp ZNC NO znc_yn
 
 echo
 
@@ -259,9 +216,7 @@ apt-get update -y
 
 if [ $ubuntu = "yes" ]; then
    echo grub-pc hold | dpkg --set-selections
-fi
-
-if [ $debian = "yes" ]; then
+else
    echo mdadm hold | dpkg --set-selections
 fi
 
@@ -447,13 +402,16 @@ if [ $rtorrent_yn = "yes" ]; then
       svn co http://rutorrent.googlecode.com/svn/trunk/rutorrent
       cd /var/www/rutorrent
          rm -rf plugins/
+      cd ../
          svn co http://rutorrent.googlecode.com/svn/trunk/plugins
-         cd plugins/
+         mv plugins rutorrent/
+         cd rutorrent/plugins/
             svn co https://autodl-irssi.svn.sourceforge.net/svnroot/autodl-irssi/trunk/rutorrent/autodl-irssi
             svn co http://rutorrent-pausewebui.googlecode.com/svn/trunk/ pausewebui
             svn co http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
             svn co http://rutorrent-instantsearch.googlecode.com/svn/trunk/ rutorrent-instantsearch
             svn co http://svn.rutorrent.org/svn/filemanager/trunk/filemanager
+
    chown -R www-data:www-data /var/www/
    chmod -R 755 /var/www
    chmod -R 777 /var/www/rutorrent/share
@@ -547,7 +505,7 @@ fi
 
 echo
 
-if [ $rtorrent_yn = "yes"]; then
+if [ $rtorrent_yn = "yes" ]; then
    echo `tput sgr0`"You can access ruTorrent at "`tput setaf 4``tput bold`"https://"$IP"/rutorrent/"
    echo `tput sgr0`"You can access your webdownload fodler at "`tput setaf 4``tput bold`"https://"$IP"/webdownload/"`tput sgr0`
 fi
