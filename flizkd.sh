@@ -178,43 +178,43 @@ echo
 echo "You will now be able to select optional addons for your seedbox..."
 echo
 
-## cont_var app num yn_var
+until [[ $var7 == continue ]]; do
+      echo -n "Which client do you want to install? (rTorrent/Deluge)"`tput setaf 3``tput bold`" [rTorrent]: "`tput sgr0`
+      read ex1
+      case $ex1 in
+              [rR][tT][oO][rR][rR][eE][nN][tT] | "")
+                     rtorrent_yn=yes
+                     var7=continue
+                     ;;
+              [dD][eE][lL][uU][gG][eE] )
+                      deluge_yn=yes
+                      var7=continue
+                      ;;
+      esac
+done
+
+## cont_var app y_n num case_1 case_2 yn_var
 optapp () {
        until [[ $1 == continue ]]; do
-             echo -n "Install $2? (Yes/No)"`tput setaf 3``tput bold`"[YES]: "`tput sgr0`
-             read $3
-             case \$$3 in
-                  [yY] | [yY][eE][sS] | "")
-                         $4=yes
+             echo -n "Install $2? (Yes/No)"`tput setaf 3``tput bold`"[$3]: "`tput sgr0`
+             read $4
+             case \$$4 in
+                  $5)
+                         $6=yes
                          $1=continue
                          ;;
-                  [nN] | [nN][oO] )
-                         $4=no
+                  $6)
+                         $6=no
                          $1=continue
                          ;;
              esac
 done
 } 
 
-optapp "$var7" "Deluge" "ex2" "deluge_yn"
-optapp "$var6" "ZNC" "ex1" "znc_yn"
 
-# until [[ $var7 == continue ]]; do
-#       echo -n "Which client do you want to install? (rTorrent/Deluge)"`tput setaf 3``tput bold`" [rTorrent]: "`tput sgr0`
-#       read ex1
-#       case $ex1 in
-#               [rR][tT][oO][rR][rR][eE][nN][tT] | "")
-#                      rtorrent_yn=yes
-#                      deluge_yn=no
-#                      var7=continue
-#                      ;;
-#               [dD][eE][lL][uU][gG][eE] )
-#                       rtorrent_yn=no
-#                       deluge_yn=yes
-#                       var7=continue
-#                       ;;
-#       esac
-# done
+optapp "$var1" "rTorrent" "YES" "[yY] | [yY][eE][sS] | \"\"" "[nN] | [nN][oO]" "ex1" "rtorrent_yn"
+# optapp "$var1" "rTorrent" "YES" "[yY] | [yY][eE][sS] | \"\"" "[nN] | [nN][oO]" "ex1" "rtorrent_yn"
+# optapp "$var6" "ZNC" "ex1" "znc_yn"
 
 # until [[ $var6 == continue ]]; do
 #       echo -n "Install ZNC? (Yes/No)"`tput setaf 3``tput bold`"[NO]: "`tput sgr0`
@@ -231,20 +231,20 @@ optapp "$var6" "ZNC" "ex1" "znc_yn"
 #       esac
 # done
 
-until [[ $var5 == continue ]]; do
-      echo -n "Install Webmin? (Yes/No)"`tput setaf 3``tput bold`"[NO]: "`tput sgr0`
-      read ex3
-      case $ex3 in
-              [yY] | [yY][eE][sS])
-                    webmin_yn=yes
-                    var5=continue
-                    ;;
-              [nN] | [nN][oO] | "" )
-                    webmin_yn=no
-                    var5=continue
-                    ;;
-      esac
-done
+# until [[ $var5 == continue ]]; do
+#       echo -n "Install Webmin? (Yes/No)"`tput setaf 3``tput bold`"[NO]: "`tput sgr0`
+#       read ex3
+#       case $ex3 in
+#               [yY] | [yY][eE][sS])
+#                     webmin_yn=yes
+#                     var5=continue
+#                     ;;
+#               [nN] | [nN][oO] | "")
+#                     webmin_yn=no
+#                     var5=continue
+#                     ;;
+#       esac
+# done
 
 echo
 
