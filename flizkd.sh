@@ -11,6 +11,9 @@ else
    exit 0
 fi
 
+apt-get -y install lsb-release
+clear
+
 distro=$(lsb_release -ds)
 os_version=$(lsb_release -rs)
 arch=$(uname -m)
