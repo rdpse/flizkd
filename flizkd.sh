@@ -275,13 +275,14 @@ if [ $deb7 = "yes" ]; then
    apt-get update -y
    apt-get purge -y --force-yes vsftpd
    apt-get clean && apt-get autoclean
-   apt-get -y --force-yes install mediainfo libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev lighttpd nano screen subversion libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
+   apt-get -y --force-yes install checkinstall mediainfo libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen subversion libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
 fi
 
 cd /root
    mkdir flizkd && cd flizkd
    svn co https://github.com/mindfk/flizkd/trunk/cfg
    svn co https://github.com/mindfk/flizkd/trunk/scripts
+   svn co https://github.com/mindfk/flizkd/trunk/source
 
 cd /root/flizkd/cfg
    /etc/init.d/vsftpd stop
@@ -289,10 +290,41 @@ cd /root/flizkd/cfg
    mkdir /etc/vsftpd
    cp vsftpd.conf /etc
 
-mkdir /etc/lighttpd/certs
-rm /etc/lighttpd/lighttp.conf
-cp lighttpd.conf /etc/lighttpd
-sed -i 's/<SWAP-FOR-IP>/'$IP'/g' /etc/lighttpd/lighttpd.conf
+cd /root/flizkd/source
+wget http://nginx.org/download/nginx-1.4.3.tar.gz 
+tar zxvf nginx-1.4.3.tar.gz
+cd nginx-1.4.3/
+./configure \
+--prefix=/usr \
+--conf-path=/etc/nginx/nginx.conf \
+--error-log-path=/var/log/nginx/error.log \
+--pid-path=/var/run/nginx.pid \
+--lock-path=/var/lock/nginx.lock \
+--user=nginx \
+--group=nginx \
+--http-log-path=/var/log/nginx/access.log \
+--with-http_dav_module \
+--http-client-body-temp-path=/var/lib/nginx/body \
+--http-proxy-temp-path=/var/lib/nginx/proxy \
+--with-http_stub_status_module --with-http_ssl_module \
+--http-fastcgi-temp-path=/var/lib/nginx/fastcgi \
+--with-debug \
+--add-module=/root/flizkd/source/htdigest
+
+make
+checkinstall -y
+
+cd /root/flizkd/cfg
+mkdir /etc/nginx/ssl
+mkdir /etc/nginx/sites-available && mkdir /etc/nginx/sites-enabled
+cp rutorrent /etc/nginx/sites-available
+ln -s /etc/nginx/sites-available/rutorrent /etc/nginx/sites-enabled/rutorrent
+rm /etc/nginx/nginx.conf
+cp nginx.conf /etc/nginx
+cp nginx /etc/init.d/nginx 
+chmod +x /etc/init.d/nginx
+insserv -dv nginx
+#sed -i 's/<SWAP-FOR-IP>/'$IP'/g' /etc/lighttpd/lighttpd.conf
 
 cd /root/flizkd/scripts
    sh makepem.sh /etc/vsftpd/vsftpd.pem /etc/vsftpd/vsftpd.pem vsftpd
@@ -305,7 +337,6 @@ if [ $kscheck = "kimsufi" ]; then
 fi
 
 add_deluge_cron=no
-mkdir /root/flizkd/source
 
 if [ $deluge_yn = "yes" ]; then
    mkdir -p /home/$usernamevar/.config/deluge
@@ -478,9 +509,11 @@ if [ $rtorrent_yn = "yes" ]; then
    fi
 
    cd /root/flizkd/scripts
-      python htdigest.py -c -b /etc/lighttpd/.passwd "ruTorrent" $usernamevar $passvar
-      sh makepem.sh /etc/lighttpd/certs/rutorrent.pem /etc/lighttpd/certs/rutorrent.pem rutorrent
-   /etc/init.d/lighttpd restart
+      python htdigest.py -c -b /etc/nginx/.passwd 'ruTorrent' $usernamevar $passvar
+      cd /etc/nginx/ssl
+      openssl req -x509 -nodes -days 3650 -subj "/CN=EB/O=EliteBox" -newkey rsa:1024 -keyout rutorrent.key -out rutorrent.crt
+      chmod 600 rutorrent.key
+   /etc/init.d/nginx restart
 
    cd ~
    echo "@reboot /home/"$usernamevar"/scripts/check-rt >> /dev/null 2>&1" >> tempcron

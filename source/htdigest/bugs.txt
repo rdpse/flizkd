@@ -1,0 +1,43 @@
+state management/nginx machinery
+- there's a fair amount of painful parsing code devoted to unpacking the key/value fields
+  in the Authorize header. i have to believe i'm just unaware of an nginx built-in of some
+  sort that will do this part for me. however the docs only led me to a string-level
+  representation of the header.
+  
+- there should be a directive letting you specify that only particular users in a realm may
+  log in. how to handle wildcards though; maybe "*" or "any"? "_" or "none"?
+
+
+rfc 2617
+- currently lacks backward compatibility with clients that don't provide `qop' fields in
+  the Authorize header. according to the rfc the server should work without it, but is it
+  worth supporting the less secure version of an already not-bulletproof authentication
+  scheme?
+
+- should the 401 response also offer a basic auth option if that module is also enabled
+  for a given location block? is there a way for one module to read another's config to
+  detect the overlap? or is this a module-loading-order issue (c.f., the way the fancy_index 
+  module inserts itself before the built-in autoindex module in its HTTP_MODULES config var)?
+  
+- the opaque field is not used when generating challenges, nor is it validated when included
+  in an authentication request. is this a significant omission? the spec makes it seem as 
+  though it only exists as a convenience to stash state in, but i could believe some software
+  out there depends upon it...
+
+- apparently (older?) versions of internet explorer don't obey the spec when dealing with
+  paths that contain a query string. the client should include the query in the url used
+  to compute the digest, but IE truncates it at the question mark. see ‘current browser 
+  issues’ comment here for details: http://www.xiven.com/sourcecode/digestauthentication.php
+
+
+general (in)security
+- OOM conditions in the shm segment are not handled at all well at the moment leading to an
+  easy DOS attack (presuming the shm size is set low enough to be exhaustible within the timeout
+  + expire interval). Valid nonces are added to the shm and expired seconds or minutes later. 
+  Once the shm is full no new nonces can be remembered and all auth attempts will fail until
+  enough space has been claimed through expiration. 
+  
+  Resizing the shm at runtime is somewhat daunting so for the moment the ‘solution’ is to
+  make sure the shm size is at the upper end of the number of requests nginx could plausibly
+  serve within the expiration interval.
+  

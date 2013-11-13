@@ -1,0 +1,70 @@
+server {
+            listen  80;
+            server_name  EliteBox;
+
+            root   /var/www/;
+            index index.php index.html;        
+  
+            auth_digest_user_file /etc/nginx/passwd.digest;                               
+            
+            location /rutorrent {
+               auth_digest 'ruTorrent';
+                    location /rutorrent/RPC2 {
+                     include    scgi_params;
+                     scgi_pass  unix:/home/rdt/rpc.socket;
+                  }
+}
+            
+           location ~ \.php$ {                 
+                fastcgi_split_path_info ^(.+\.php)(/.+)$; 
+                try_files $uri $uri/ =404; 
+                fastcgi_pass unix:/var/run/php5-fpm.sock;
+                fastcgi_index index.php;
+                include fastcgi_params;
+
+            }
+           
+            location ~ /\.ht {
+                deny  all;
+            } 
+
+}
+
+  server {
+            listen 443;
+            server_name EliteBox;
+
+            ssl on;            
+            ssl_certificate /etc/nginx/ssl/rutorrent.crt;
+            ssl_certificate_key /etc/nginx/ssl/rutorrent.key;
+                      
+            root /var/www/;
+            index index.php index.html;
+
+            location  / {
+                satisfy  any;                              
+                auth_digest 'ruTorrent';
+                auth_digest_user_file /etc/nginx/.passwd;
+
+            }
+
+            location /rutorrent {
+                   location /rutorrent/RPC2 {
+                            include    scgi_params;
+                            scgi_pass  localhost:5000;
+                   }
+            }
+
+            location ~ \.php$ {                
+                fastcgi_split_path_info ^(.+\.php)(/.+)$; 
+                try_files $uri $uri/ =404; 
+                fastcgi_pass unix:/var/run/php5-fpm.sock;
+                fastcgi_index index.php;
+                include fastcgi_params;
+            }
+
+            location ~ /\.ht {
+                deny  all;
+            }
+  }
+
