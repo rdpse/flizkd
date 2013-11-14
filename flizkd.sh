@@ -92,7 +92,7 @@ opt_app () {
 
 ## version, user/group
 install_nginx () {
-    
+
    local ngLogDir=/var/log/nginx
    local ngStateDir=/var/lib/nginx
    local ngConf=/etc/nginx
@@ -337,6 +337,25 @@ add_cron () {
    fi
 }
 
+install_vnc () {
+  local vncDir=$userDir/.vnc
+  mkdir $vncDir
+
+  apt-get -y install vnc4server xorg xfce4 xfce4-goodies xfce4-session
+  python $scriptsDir/vncpasswd.py -f $vncDir/passwd $passvar 
+  
+  cp -f $cfgDir/xstartup $vncDir/xstartup
+  chmod +x $vncDir/xstartup
+
+  cp $cfgDir/vncserver /etc/init.d
+  chmod +x /etc/init.d/vncserver
+  if [ ubuntu = "yes" ]; then
+     update-rc.d vncserver defaults
+  else
+     insserv -dv vncserver
+  fi  
+}
+
 ## version 
 install_webmin () { 
    apt-get install -y openssl libauthen-pam-perl libio-pty-perl apt-show-versions
@@ -506,6 +525,7 @@ opt_app rTorrent YES rtorrent_yn
 opt_app Deluge NO deluge_yn
 opt_app Webmin NO webmin_yn
 opt_app ZNC NO znc_yn
+opt_app VNC NO vnc_yn
 
 echo
 
@@ -619,6 +639,11 @@ if [ $znc_yn = "yes" ]; then
    install_znc latest 
 fi
 
+if [ $vnc_yn = "yes" ]; then
+   install_vnc
+   sudo $usernamevar vncserver
+fi
+
 echo
 
 ## FINAL OUTPUT
@@ -644,6 +669,10 @@ if [ $znc_yn = "yes" ]; then
    echo `tput setaf 3`"ZNC is installed, but you will need to configure it yourself, to do this,"
    echo "you will need to log into SSH with the user you created and run the following command:"
    echo "'znc --makeconf'"
+fi
+
+if [ $vnc_yn = "yes" ]; then
+   echo `tput sgr0`"You can access your VNC Desktop at "`tput setaf 4``tput bold`""$IP":1"`tput sgr0`
 fi
 
 echo
