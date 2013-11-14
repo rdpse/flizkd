@@ -47,6 +47,89 @@ if [[ $arch != "x86_64" ]]; then
    exit 1
 fi
 
+clear
+echo
+echo `tput bold``tput sgr 0 1`"Flizkd 1.0"`tput sgr0`" - https://github.com/mindfk/flizkd/"
+echo
+echo "This script installs the newest versions of rtorrent, rutorrent + plugins,"
+echo "autodl-irssi, lighttpd and FTP (vsftpd). It'll also create a web download"
+echo "folder and a SSL certificate. You can choose to instal Deluge instead of"
+echo "rTorrent if you wish. Optional: ZNC and Webmin."
+echo
+echo "Once you have installed the seedbox, you can run this script again at a later"
+echo "time and you will be given configuration options (password changes etc.)"
+echo
+echo "Flizkd is a fork of Flizbox - http://sourceforge.net/projects/flizbox/."
+echo
+echo "Press control-z if you wish to cancel."
+echo
+
+until [[ $var1 == yes ]]; do
+      case $osVersion in
+           "10.04" | "11.04")
+           ubuntu=yes
+           ub1011x=yes
+           ub1011=yes          
+           deb6=no
+           deb7=no
+           usersha=no
+           var1=yes
+           ;;
+           "11.10")
+           ubuntu=yes
+           ub1011x=yes
+           ub1011=no
+           deb6=no
+           deb7=no
+           usersha=no
+           var1=yes           
+           ;;
+           "12.04")
+           ubuntu=yes
+           ub1011=no
+           ub1011x=no
+           deb6=no
+           deb7=no
+           usesha=yes
+           var1=yes
+           ;;
+           "12.10" | "13.04" | "13.10")
+           ubuntu=yes
+           ub1011=no
+           ub1011x=no
+           deb6=no
+           deb7=no
+           var1=yes
+           usesha=yes
+           ;;
+           6.0.[0-9])
+           debian=yes
+           deb6=yes
+           deb7=no
+           ubuntu=no
+           ub1011=no
+           ub1011x=no
+           usesha=no
+           var1=yes
+           ;;
+           7 | 7.[0-9])
+           debian=yes
+           deb7=yes
+           deb6=no
+           ubuntu=no
+           ub1011=no
+           ub1011x=no
+           usesha=yes
+           var1=yes
+           ;;
+           *)
+           echo `tput setaf 1``tput bold`"This OS is not yet supported! (EXITING)"`tput sgr0`
+           echo
+           exit 1
+           ;;
+      esac
+done
+
 ## Check if certain packages are installed
 check_install () {   
     local checkPkg=$(dpkg-query -l | grep $1 | wc -l)
@@ -387,89 +470,6 @@ install_vnc () {
      insserv -dv vncserver
   fi  
 }
-
-clear
-echo
-echo `tput bold``tput sgr 0 1`"Flizkd 1.0"`tput sgr0`" - https://github.com/mindfk/flizkd/"
-echo
-echo "This script installs the newest versions of rtorrent, rutorrent + plugins,"
-echo "autodl-irssi, lighttpd and FTP (vsftpd). It'll also create a web download"
-echo "folder and a SSL certificate. You can choose to instal Deluge instead of"
-echo "rTorrent if you wish. Optional: ZNC and Webmin."
-echo
-echo "Once you have installed the seedbox, you can run this script again at a later"
-echo "time and you will be given configuration options (password changes etc.)"
-echo
-echo "Flizkd is a fork of Flizbox - http://sourceforge.net/projects/flizbox/."
-echo
-echo "Press control-z if you wish to cancel."
-echo
-
-until [[ $var1 == yes ]]; do
-      case $osVersion in
-           "10.04" | "11.04")
-           ubuntu=yes
-           ub1011x=yes
-           ub1011=yes          
-           deb6=no
-           deb7=no
-           usersha=no
-           var1=yes
-           ;;
-           "11.10")
-           ubuntu=yes
-           ub1011x=yes
-           ub1011=no
-           deb6=no
-           deb7=no
-           usersha=no
-           var1=yes           
-           ;;
-           "12.04")
-           ubuntu=yes
-           ub1011=no
-           ub1011x=no
-           deb6=no
-           deb7=no
-           usesha=yes
-           var1=yes
-           ;;
-           "12.10" | "13.04" | "13.10")
-           ubuntu=yes
-           ub1011=no
-           ub1011x=no
-           deb6=no
-           deb7=no
-           var1=yes
-           usesha=yes
-           ;;
-           6.0.[0-9])
-           debian=yes
-           deb6=yes
-           deb7=no
-           ubuntu=no
-           ub1011=no
-           ub1011x=no
-           usesha=no
-           var1=yes
-           ;;
-           7 | 7.[0-9])
-           debian=yes
-           deb7=yes
-           deb6=no
-           ubuntu=no
-           ub1011=no
-           ub1011x=no
-           usesha=yes
-           var1=yes
-           ;;
-           *)
-           echo `tput setaf 1``tput bold`"This OS is not yet supported! (EXITING)"`tput sgr0`
-           echo
-           exit 1
-           ;;
-      esac
-done
 
 echo
 echo "You'll need to choose a username and password. Everything else will run"
