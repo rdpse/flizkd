@@ -48,8 +48,7 @@ if [[ $arch != "x86_64" ]]; then
 fi
 
 ## Check if certain packages are installed
-check_install () {
-   
+check_install () {   
     local checkPkg=$(dpkg-query -l | grep $1 | wc -l)
 
     if [[ $checkPkg == 0 ]]; then
