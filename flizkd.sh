@@ -337,25 +337,6 @@ add_cron () {
    fi
 }
 
-install_vnc () {
-  local vncDir=$userDir/.vnc
-  mkdir $vncDir
-
-  apt-get -y install vnc4server xorg xfce4 xfce4-goodies xfce4-session
-  python $scriptsDir/vncpasswd.py -f $vncDir/passwd $passvar 
-  
-  cp -f $cfgDir/xstartup $vncDir/xstartup
-  chmod +x $vncDir/xstartup
-
-  cp $cfgDir/vncserver /etc/init.d
-  chmod +x /etc/init.d/vncserver
-  if [ ubuntu = "yes" ]; then
-     update-rc.d vncserver defaults
-  else
-     insserv -dv vncserver
-  fi  
-}
-
 ## version 
 install_webmin () { 
    apt-get install -y openssl libauthen-pam-perl libio-pty-perl apt-show-versions
@@ -385,6 +366,26 @@ install_znc () {
       ./configure --enable-extra
       make
       checkinstall -y
+}
+
+install_vnc () {
+  local vncDir=$userDir/.vnc
+  mkdir $vncDir
+
+  apt-get -y install vnc4server xorg xfce4 xfce4-goodies xfce4-session
+  python $scriptsDir/vncpasswd.py -f $vncDir/passwd $passvar 
+  
+  cp -f $cfgDir/xstartup $vncDir/xstartup
+  chmod +x $vncDir/xstartup
+
+  cp $cfgDir/vncserver /etc/init.d
+  sed -i 's/<usernamevar>/'$usernamevar'/' /etc/init.d/vncserver 
+  chmod +x /etc/init.d/vncserver
+  if [ ubuntu = "yes" ]; then
+     update-rc.d vncserver defaults
+  else
+     insserv -dv vncserver
+  fi  
 }
 
 clear
