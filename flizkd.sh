@@ -553,6 +553,7 @@ apt-get update -y
 if [ $ksCheck = "kimsufi" ]; then
    if [ -f .ssh/authorized_keys2 ]; then
       rm .ssh/authorized_keys2
+   fi   
 fi
 
 if [ $ubuntu = "yes" ]; then
