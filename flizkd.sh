@@ -553,7 +553,8 @@ tune2fs -m .5 $homePart
 apt-get update -y
 
 if [ $ksCheck = "kimsufi" ]; then
-   rm .ssh/authorized_keys2
+   if [ -f .ssh/authorized_keys2 ]; then
+      rm .ssh/authorized_keys2
 fi
 
 if [ $ubuntu = "yes" ]; then
