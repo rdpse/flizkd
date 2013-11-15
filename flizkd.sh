@@ -228,16 +228,16 @@ install_nginx () {
     cd $cfgDir  
        mv *default* $defCfg
        rm $ngConf/nginx.conf && cp nginx.conf $ngConf
-       sed -i 's/<wwwUser>/'$2'/' $ngConfFile
-       sed -i 's/<coresNo>/'$coresNo'/' $ngConfFile
-       sed 's/<ngLogDir>/'$ngLogDir'/g' $ngConfFile
-       sed 's/<sitesEnabl>/'$sitesEnabl'/g' $ngConfFile
+       sed -i 's_<wwwUser>_'$2'_' $ngConfFile
+       sed -i 's_<coresNo>/'$coresNo'_' $ngConfFile
+       sed -i 's_<ngLogDir>_'$ngLogDir'_g' $ngConfFile
+       sed -i 's_<sitesEnabl>_'$sitesEnabl'_g' $ngConfFile
 
        cp rutorrent $sitesAvail
        ln -s $rutSiteFile $sitesEnabl/rutorrent
-       sed 's/<wwwDir>/'$wwwDir'/g' $rutSiteFile
-       sed 's/<ngConf>/'$ngConf'/g' $rutSiteFile
-       sed 's/<ngSsl>/'$ngSsl'/g' $rutSiteFile
+       sed -i 's_<wwwDir>_'$wwwDir'_g' $rutSiteFile
+       sed -i 's_<ngConf>_'$ngConf'_g' $rutSiteFile
+       sed -i 's_<ngSsl>_'$ngSsl'_g' $rutSiteFile
     
     ##init script
     cp nginx /etc/init.d/nginx
