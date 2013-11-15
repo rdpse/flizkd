@@ -211,15 +211,15 @@ install_nginx () {
         make
         checkinstall -y
     
-    if [ -d $wwwDir ]; then
+    if [ ! -d $wwwDir ]; then
        mkdir $wwwDir  
     fi
 
-    if [ -d $ngStateDir ]; then
+    if [ ! -d $ngStateDir ]; then
        mkdir $ngStateDir  
     fi   
 
-    if [ -d $ngLogDir ]; then
+    if [ ! -d $ngLogDir ]; then
        mkdir $ngLogDir
     fi  
 
