@@ -26,8 +26,6 @@ check_install () {
     if [[ $checkPkg == 0 ]]; then
        echo "Installing $1..."
        apt-get -y install $1
-    else
-       echo "$1 is already installed."
     fi
 }
 
