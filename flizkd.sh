@@ -425,21 +425,17 @@ add_cron () {
    fi
 }
 
-## version 
+## webmin
 install_webmin () { 
    apt-get install -y openssl libauthen-pam-perl libio-pty-perl apt-show-versions
    if [ $ubuntu = "yes" ]; then
-      echo "deb http://download.webmin.com/download/repository sarge contrib deb" >> /etc/apt/sources.list
-      echo "deb http://webmin.mirror.somersettechsolutions.co.uk/repository sarge contrib" >> /etc/apt/sources.list
-      wget http://www.webmin.com/jcameron-key.asc
-      apt-key add jcameron-key.asc
-      apt-get update -y
-      apt-get install -y webmin
+      http://www.webmin.com/download/deb/webmin-current.deb
+      dpkg -i webmin_*_all.deb
    fi
    if [ $debian = "yes" ]; then
       cd $srcDir
-      wget http://prdownloads.sourceforge.net/webadmin/webmin_"$1"_all.deb
-      dpkg -i webmin_"$1"_all.deb
+      wget http://www.webmin.com/download/deb/webmin-"$1".deb
+      dpkg -i webmin_*_all.deb
    fi
 }
 
@@ -641,7 +637,7 @@ if [ $deluge_yn = "yes" ]; then
 fi
 
 if [ $webmin_yn = "yes" ]; then
-   install_webmin 1.660
+   install_webmin current
 fi
 
 if [ $znc_yn = "yes" ]; then
