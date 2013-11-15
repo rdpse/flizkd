@@ -221,8 +221,9 @@ install_nginx () {
 
     if [ ! -d $ngLogDir ]; then
        mkdir $ngLogDir
-    fi  
+    fi 
 
+    mv /usr/html/index.html $wwwDir
     mkdir $defCfg && mkdir $ngSsl && mkdir $sitesAvail && mkdir $sitesEnabl
 
     cd $ngConf
@@ -231,7 +232,7 @@ install_nginx () {
     cd $cfgDir  
        rm $ngConf/nginx.conf && cp nginx.conf $ngConf
        sed -i 's_<wwwUser>_'$2'_' $ngConfFile
-       sed -i 's_<coresNo>/'$coresNo'_' $ngConfFile
+       sed -i 's_<coresNo>_'$coresNo'_' $ngConfFile
        sed -i 's_<ngLogDir>_'$ngLogDir'_g' $ngConfFile
        sed -i 's_<sitesEnabl>_'$sitesEnabl'_g' $ngConfFile
 
