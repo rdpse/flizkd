@@ -460,15 +460,27 @@ install_znc () {
 }
 
 install_vnc () {
-  local vncDir=$userDir/.vnc
+
+  local vncBin=/usr/bin/vncserver
+  local vncExec=$userDir/.vnc
   mkdir $vncDir
 
   apt-get -y install vnc4server xorg xfce4 xfce4-goodies xfce4-session xdg-utils xfce4-power-manager
-  python $scriptsDir/vncpasswd.py -f $vncDir/passwd $passvar 
+  #python $scriptsDir/vncpasswd.py -f $vncDir/passwd $passvar 
   
   cp -f $cfgDir/xstartup $vncDir/xstartup
   chmod +x $vncDir/xstartup
   chown -R $usernamevar $userDir
+
+  /usr/bin/expect <<EOF
+  spawn "$vncExec"
+  expect "Password:"
+  send "$passvar\r"
+  expect "Verify:"
+  send "$passvar\r"
+  expect eof
+  exit
+EOF
 
   cp $cfgDir/vncserver /etc/init.d
   sed -i 's/<usernamevar>/'$usernamevar'/' /etc/init.d/vncserver 
@@ -577,7 +589,7 @@ fi
 if [[ $osVersion = "12.10" || $osVersion = "13.04" || $osVersion = "13.10" ]]; then
    apt-get install -y python-software-properties
    apt-get update -y
-   apt-get install -y checkinstall mediainfo libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap htop
+   apt-get install -y checkinstall mediainfo libpcre3 libpcre3-dev libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap htop
 fi
 
 if [ $ub1011x = "yes" ]; then
@@ -655,6 +667,11 @@ fi
 
 if [ $vnc_yn = "yes" ]; then
    install_vnc
+   
+   #clear
+   #echo 
+   #echo "Enter a password between 6 and 8 characters long."
+   #echo "This will be the password you'll use to access your VNC desktop."
    su -l $usernamevar -c vncserver
 fi
 
