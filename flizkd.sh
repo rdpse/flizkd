@@ -235,7 +235,11 @@ install_nginx () {
     ##init script
     cp nginx /etc/init.d/nginx
     chmod +x /etc/init.d/nginx
-    insserv -dv nginx
+    if [ $ubuntu = "yes" ]; then
+       update-rc.d nginx defaults
+    else    
+       insserv -dv nginx
+    fi
 }
 
 ## lib_ver, rt_ver
@@ -461,11 +465,12 @@ install_vnc () {
   
   cp -f $cfgDir/xstartup $vncDir/xstartup
   chmod +x $vncDir/xstartup
+  chown -R $usernamevar $userDir
 
   cp $cfgDir/vncserver /etc/init.d
   sed -i 's/<usernamevar>/'$usernamevar'/' /etc/init.d/vncserver 
   chmod +x /etc/init.d/vncserver
-  if [ ubuntu = "yes" ]; then
+  if [ $ubuntu = "yes" ]; then
      update-rc.d vncserver defaults
   else
      insserv -dv vncserver
@@ -533,17 +538,9 @@ echo
 
 apt-get -y install subversion
 cd /root
-   mkdir flizkd && cd flizkd
+   mkdir $flizkdDir $srcDir && cd $flizkdDir
    svn co https://github.com/mindfk/flizkd/trunk/cfg
    svn co https://github.com/mindfk/flizkd/trunk/scripts
-
-userDir=/home/$usernamevar
-echo "userpw=\`perl -e 'print crypt(\""$passvar"\", \"salt\"),\"\\n\"'\`" >tmp
-echo "useradd "$usernamevar "-s\/bin\/bash -U -m -p\$userpw" >>tmp
-bash tmp
-shred -n 6 -u -z tmp
-echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
-echo $usernamevar > $flizkdDir/user
 
 ## Reduce the percentage of reserved blocks
 tune2fs -m .5 $homePart
@@ -565,7 +562,7 @@ apt-get upgrade -y
 if [ $osVersion = "12.04" ]; then
    apt-get install -y python-software-properties
    apt-get update -y
-   apt-get install -y checkinstall libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl lighttpd php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap
+   apt-get install -y checkinstall libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap
    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.62-1_amd64.Debian_5.deb -O mediainfo.deb
    wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.62-1_amd64.Ubuntu_12.04.deb -O libmediainfo.deb
    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.xUbuntu_12.04.deb -O libzen.deb
@@ -575,13 +572,13 @@ fi
 if [[ $osVersion = "12.10" || $osVersion = "13.04" || $osVersion = "13.10" ]]; then
    apt-get install -y python-software-properties
    apt-get update -y
-   apt-get install -y checkinstall mediainfo libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl lighttpd php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap
+   apt-get install -y checkinstall mediainfo libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap
 fi
 
 if [ $ub1011x = "yes" ]; then
    apt-get install -y python-software-properties
    apt-get update -y
-   apt-get install -y checkinstall libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl lighttpd php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap
+   apt-get install -y checkinstall libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap
    wget http://sourceforge.net/projects/mediainfo/files/binary/libmediainfo0/0.7.62/libmediainfo0_0.7.62-1_amd64.Ubuntu_10.04.deb -O libmediainfo.deb
    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.xUbuntu_10.04.deb -O libzen.deb
    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.62-1_amd64.Debian_5.deb -O mediainfo.deb
@@ -594,7 +591,7 @@ if [ $deb6 = "yes" ]; then
    apt-get update -y
    apt-get purge -y --force-yes vsftpd lighttpd apache2 apache2-utils
    apt-get clean && apt-get autoclean
-   apt-get -y install checkinstall libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev lighttpd nano screen libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common php5-fpm irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
+   apt-get -y install checkinstall libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common php5-fpm irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.58-1_amd64.Debian_6.0.deb -O mediainfo.deb
    wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.58-1_amd64.Debian_6.0.deb -O libmediainfo.deb
    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.26-1_amd64.Debian_6.0.deb -O libzen.deb
@@ -607,8 +604,17 @@ if [ $deb7 = "yes" ]; then
    apt-get update -y
    apt-get purge -y --force-yes vsftpd
    apt-get clean && apt-get autoclean
-   apt-get -y install checkinstall mediainfo libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common php5-fpm irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
+   apt-get -y install checkinstall mediainfo sudo libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common php5-fpm irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent
 fi
+
+## Create user
+userDir=/home/$usernamevar
+echo "userpw=\`perl -e 'print crypt(\""$passvar"\", \"salt\"),\"\\n\"'\`" >tmp
+echo "useradd "$usernamevar "-s\/bin\/bash -U -m -p\$userpw" >>tmp
+bash tmp
+shred -n 6 -u -z tmp
+echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
+echo $usernamevar > $flizkdDir/user
 
 ## Install nginx
 install_nginx 1.4.3 www-data
@@ -644,7 +650,7 @@ fi
 
 if [ $vnc_yn = "yes" ]; then
    install_vnc
-   sudo $usernamevar vncserver
+   sudo -l $usernamevar -c vncserver
 fi
 
 echo
