@@ -191,19 +191,19 @@ install_nginx () {
        cd nginx-"$1"/
         ./configure \
         --prefix=/usr \
-        --conf-path=$ngConf/nginx.conf \
-        --error-log-path=$ngLogDir/error.log \
+        --conf-path="$ngConf"/nginx.conf \
+        --error-log-path="$ngLogDir"/error.log \
         --pid-path=/var/run/nginx.pid \
         --lock-path=/var/lock/nginx.lock \
         --user="$2" \
         --group="$2" \
-        --http-log-path=$ngLogDir/nginx/access.log \
+        --http-log-path="$ngLogDir"/nginx/access.log \
         --with-http_dav_module \
-        --http-client-body-temp-path=$ngStateDir/body \
-        --http-proxy-temp-path=$ngStateDir/proxy \
+        --http-client-body-temp-path="$ngStateDir"/body \
+        --http-proxy-temp-path="$ngStateDir"/proxy \
         --with-http_stub_status_module \
         --with-http_ssl_module \
-        --http-fastcgi-temp-path=$ngStateDir/fastcgi \
+        --http-fastcgi-temp-path="$ngStateDir"/fastcgi \
         --with-debug 
 
         make
@@ -646,7 +646,7 @@ fi
 
 if [ $vnc_yn = "yes" ]; then
    install_vnc
-   sudo -l $usernamevar -c vncserver
+   su -l $usernamevar -c vncserver
 fi
 
 echo
