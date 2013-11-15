@@ -7,27 +7,25 @@ server {
   
             auth_basic_user_file <ngConf>/.passwd;                               
             
-            location /rutorrent {
+            location /RPC.<usernamevar> {
                auth_basic 'ruTorrent';
-                    location /rutorrent/RPC2 {
-                     include    scgi_params;
-                     scgi_pass  localhost:5000;
-                  }
-}
+               include    scgi_params;
+               scgi_pass  localhost:5000;
+            }
             
-           location ~ \.php$ {                 
+           location ~ \.php$ {                                
                 fastcgi_split_path_info ^(.+\.php)(/.+)$; 
                 try_files $uri $uri/ =404; 
                 fastcgi_pass unix:/var/run/php5-fpm.sock;
+                fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+                fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
                 fastcgi_index index.php;
                 include fastcgi_params;
-
             }
            
             location ~ /\.ht {
                 deny  all;
             } 
-
 }
 
   server {
@@ -41,24 +39,20 @@ server {
             root <wwwDir>;
             index index.php index.html;
 
-            location  / {
-                satisfy  any;                              
-                auth_digest 'ruTorrent';
-                auth_digest_user_file <ngConf>/.passwd;
+            auth_basic_user_file <ngConf>/.passwd
 
-            }
-
-            location /rutorrent {
-                   location /rutorrent/RPC2 {
-                            include    scgi_params;
-                            scgi_pass  localhost:5000;
-                   }
+            location /RPC.<usernamevar> {
+                auth_basic 'ruTorrent';
+                include    scgi_params;
+                scgi_pass  localhost:5000;
             }
 
             location ~ \.php$ {                
                 fastcgi_split_path_info ^(.+\.php)(/.+)$; 
                 try_files $uri $uri/ =404; 
                 fastcgi_pass unix:/var/run/php5-fpm.sock;
+                fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+                fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
                 fastcgi_index index.php;
                 include fastcgi_params;
             }
