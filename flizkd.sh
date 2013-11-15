@@ -224,9 +224,11 @@ install_nginx () {
     fi  
 
     mkdir $defCfg && mkdir $ngSsl && mkdir $sitesAvail && mkdir $sitesEnabl
+
+    cd $ngConf
+       mv *.default $defCfg
    
     cd $cfgDir  
-       mv *default* $defCfg
        rm $ngConf/nginx.conf && cp nginx.conf $ngConf
        sed -i 's_<wwwUser>_'$2'_' $ngConfFile
        sed -i 's_<coresNo>/'$coresNo'_' $ngConfFile
