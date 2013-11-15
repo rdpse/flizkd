@@ -203,6 +203,7 @@ install_nginx () {
         --http-proxy-temp-path="$ngStateDir"/proxy \
         --with-http_stub_status_module \
         --with-http_ssl_module \
+        --without-http_rewrite_module \
         --http-fastcgi-temp-path="$ngStateDir"/fastcgi \
         --with-debug 
 
