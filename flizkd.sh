@@ -274,12 +274,12 @@ install_rtorrent () {
    cd ../
       rm -rf xmlrpc-c libtorrent* rtorrent*
 
-   cd $wwwDir/
+   cd $wwwDir
       touch index.html
       mkdir webdownload
       cd webdownload
          ln -s $userDir/downloads
-   cd ../
+   cd $wwwDir
       svn co http://rutorrent.googlecode.com/svn/trunk/rutorrent
       cd $rutDir
          rm -rf plugins/
