@@ -393,13 +393,13 @@ install_deluge () {
 }
 
 add_cron () {
-   if [ $1 = "deluge" ]
+   if [ $1 = "deluge" ]; then
       sed 's/<username>/'$usernamevar'/' $cfgDir/check-deluge > $userDir/scripts/check-deluge
       chown $usernamevar:$usernamevar $userDir/scripts/check-deluge
       chmod +x $userDir/scripts/check-deluge
       echo "@reboot "$userDir"/scripts/check-deluge >> /dev/null 2>&1" >> tempcron
       echo "*/3 * * * * "$userDir"/scripts/check-deluge >> /dev/null 2>&1" >> tempcron
-   else  
+   else
       cd ~
       echo "@reboot "$userDir"/scripts/check-rt >> /dev/null 2>&1" >> tempcron
       echo "*/3 * * * * "$userDir"/scripts/check-rt >> /dev/null 2>&1" >> tempcron
