@@ -64,7 +64,7 @@ echo
 echo `tput bold``tput sgr 0 1`"Flizkd 1.0"`tput sgr0`" - https://github.com/mindfk/flizkd/"
 echo
 echo "This script installs the newest versions of rtorrent, rutorrent + plugins,"
-echo "autodl-irssi, lighttpd and FTP (vsftpd). It'll also create a web download"
+echo "autodl-irssi, nginx and FTP (vsftpd). It'll also create a web download"
 echo "folder and a SSL certificate. You can choose to instal Deluge instead of"
 echo "rTorrent if you wish. Optional: ZNC and Webmin."
 echo
@@ -179,11 +179,12 @@ install_nginx () {
    local ngLogDir=/var/log/nginx
    local ngStateDir=/var/lib/nginx
    local ngConf=/etc/nginx
-   local ngConfFile=$ngConf/nginx.conf
-   local ngSsl=$ngConf/ssl
-   local sitesAvail=$ngConf/sites-available
-   local sitesEnabl=$ngConf/sites-enabled
-   local rutSiteFile=$sitesAvail/rutorrent
+   local ngConfFile="$ngConf"/nginx.conf
+   local defCfg="$ngConf"/defcfgs
+   local ngSsl="$ngConf"/ssl
+   local sitesAvail="$ngConf"/sites-available
+   local sitesEnabl="$ngConf"/sites-enabled
+   local rutSiteFile="$sitesAvail"/rutorrent
 
      cd $srcDir
        wget http://nginx.org/download/nginx-"$1".tar.gz 
@@ -209,6 +210,10 @@ install_nginx () {
 
         make
         checkinstall -y
+    
+    if [ -d $wwwDir ]; then
+       mkdir $wwwDir  
+    fi
 
     if [ -d $ngStateDir ]; then
        mkdir $ngStateDir  
@@ -218,20 +223,21 @@ install_nginx () {
        mkdir $ngLogDir
     fi  
 
-    mkdir $ngSsl && mkdir $sitesAvail && mkdir $sitesEnabl
+    mkdir $defCfg && mkdir $ngSsl && mkdir $sitesAvail && mkdir $sitesEnabl
    
-    cd $cfgDir        
+    cd $cfgDir  
+       mv *.default $defCfg
        rm $ngConf/nginx.conf && cp nginx.conf $ngConf
        sed -i 's/<wwwUser>/'$2'/' $ngConfFile
        sed -i 's/<coresNo>/'$coresNo'/' $ngConfFile
-       sed -i 's/<ngLogDir>/'$ngLogDir'/' $ngConfFile
-       sed -i 's/<sitesEnabl>/'$sitesEnabl'/' $ngConfFile
+       sed -i 's/<ngLogDir>/'$ngLogDir'/g' $ngConfFile
+       sed -i 's/<sitesEnabl>/'$sitesEnabl'/g' $ngConfFile
 
        cp rutorrent $sitesAvail
        ln -s $rutSiteFile $sitesEnabl/rutorrent
-       sed -i 's/<wwwDir>/'$wwwDir'/' $rutSiteFile
-       sed -i 's/<ngConf>/'$ngConf'/' $rutSiteFile
-       sed -i 's/<ngSsl>/'$ngSsl'/' $rutSiteFile
+       sed -i 's/<wwwDir>/'$wwwDir'/g' $rutSiteFile
+       sed -i 's/<ngConf>/'$ngConf'/g' $rutSiteFile
+       sed -i 's/<ngSsl>/'$ngSsl'/g' $rutSiteFile
     
     ##init script
     cp nginx /etc/init.d/nginx
