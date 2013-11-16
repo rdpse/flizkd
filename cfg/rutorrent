@@ -39,7 +39,7 @@ server {
             root <wwwDir>;
             index index.php index.html;
 
-            auth_basic_user_file <ngConf>/.passwd
+            auth_basic_user_file <ngConf>/.passwd;
 
             location /RPC.<usernamevar> {
                 auth_basic 'ruTorrent';

@@ -266,6 +266,11 @@ configure_fpm () {
    
    chmod +x /etc/init.d/php5-fpm
    update-rc.d php5-fpm defaults
+   
+   # get a timezone  
+   TIMEZONE=$([ -f /etc/timezone ] && cat /etc/timezone | sed "s/\//\\\\\//g")
+   sed -i "s/^\;date\.timezone.*$/date\.timezone = \"${TIMEZONE}\" /g" /etc/php5/php.ini
+
    service php5-fpm start   
 }
 
@@ -588,74 +593,74 @@ if [ $ksCheck = "kimsufi" ]; then
    fi   
 fi
 
-if [ $ubuntu = "yes" ]; then
-   echo grub-pc hold | dpkg --set-selections
-else
-   echo mdadm hold | dpkg --set-selections
-fi
+# if [ $ubuntu = "yes" ]; then
+#    echo grub-pc hold | dpkg --set-selections
+# else
+#    echo mdadm hold | dpkg --set-selections
+# fi
 
 apt-get upgrade -y
 
-if [ $osVersion = "12.04" ]; then
-   apt-get install -y python-software-properties
-   apt-get update -y
-   apt-get install -y checkinstall expect libpcre3 libpcre3-dev libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap htop apache2-utils
-   wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.62-1_amd64.Debian_5.deb -O mediainfo.deb
-   wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.62-1_amd64.Ubuntu_12.04.deb -O libmediainfo.deb
-   wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.xUbuntu_12.04.deb -O libzen.deb
-   dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
-fi 
+# if [ $osVersion = "12.04" ]; then
+#    apt-get install -y python-software-properties
+#    apt-get update -y
+#    apt-get install -y checkinstall expect libpcre3 libpcre3-dev libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap htop apache2-utils
+#    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.62-1_amd64.Debian_5.deb -O mediainfo.deb
+#    wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.62-1_amd64.Ubuntu_12.04.deb -O libmediainfo.deb
+#    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.xUbuntu_12.04.deb -O libzen.deb
+#    dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
+# fi 
 
-if [[ $osVersion = "12.10" || $osVersion = "13.04" || $osVersion = "13.10" ]]; then
-   apt-get install -y python-software-properties
-   apt-get update -y
-   apt-get install -y checkinstall expect mediainfo libpcre3 libpcre3-dev libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap htop apache2-utils
-fi
+# if [[ $osVersion = "12.10" || $osVersion = "13.04" || $osVersion = "13.10" ]]; then
+#    apt-get install -y python-software-properties
+#    apt-get update -y
+#    apt-get install -y checkinstall expect mediainfo libpcre3 libpcre3-dev libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap htop apache2-utils
+# fi
 
-if [ $ub1011x = "yes" ]; then
-   apt-get install -y python-software-properties
-   apt-get update -y
-   apt-get install -y checkinstall expect libpcre3 libpcre3-dev libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap htop apache2-utils
-   wget http://sourceforge.net/projects/mediainfo/files/binary/libmediainfo0/0.7.62/libmediainfo0_0.7.62-1_amd64.Ubuntu_10.04.deb -O libmediainfo.deb
-   wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.xUbuntu_10.04.deb -O libzen.deb
-   wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.62-1_amd64.Debian_5.deb -O mediainfo.deb
-   dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
-fi
+# if [ $ub1011x = "yes" ]; then
+#    apt-get install -y python-software-properties
+#    apt-get update -y
+#    apt-get install -y checkinstall expect libpcre3 libpcre3-dev libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap htop apache2-utils
+#    wget http://sourceforge.net/projects/mediainfo/files/binary/libmediainfo0/0.7.62/libmediainfo0_0.7.62-1_amd64.Ubuntu_10.04.deb -O libmediainfo.deb
+#    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.xUbuntu_10.04.deb -O libzen.deb
+#    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.62-1_amd64.Debian_5.deb -O mediainfo.deb
+#    dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
+# fi
 
-if [ $deb6 = "yes" ]; then
-   echo "deb http://ftp.debian.org/debian squeeze main contrib non-free" >> /etc/apt/sources.list
-   echo "deb-src http://ftp.debian.org/debian squeeze main contrib non-free" >> /etc/apt/sources.list
-   apt-get update -y
-   apt-get purge -y --force-yes vsftpd lighttpd apache2 apache2-utils
-   apt-get clean && apt-get autoclean
-   apt-get -y install checkinstall expect libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common php5-fpm irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent htop
-   wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.58-1_amd64.Debian_6.0.deb -O mediainfo.deb
-   wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.58-1_amd64.Debian_6.0.deb -O libmediainfo.deb
-   wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.26-1_amd64.Debian_6.0.deb -O libzen.deb
-   dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
-fi
+# if [ $deb6 = "yes" ]; then
+#    echo "deb http://ftp.debian.org/debian squeeze main contrib non-free" >> /etc/apt/sources.list
+#    echo "deb-src http://ftp.debian.org/debian squeeze main contrib non-free" >> /etc/apt/sources.list
+#    apt-get update -y
+#    apt-get purge -y --force-yes vsftpd lighttpd apache2 apache2-utils
+#    apt-get clean && apt-get autoclean
+#    apt-get -y install checkinstall expect libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common php5-fpm irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent htop
+#    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.58-1_amd64.Debian_6.0.deb -O mediainfo.deb
+#    wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.58-1_amd64.Debian_6.0.deb -O libmediainfo.deb
+#    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.26-1_amd64.Debian_6.0.deb -O libzen.deb
+#    dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
+# fi
 
-if [ $deb7 = "yes" ]; then
-   echo "deb http://ftp.debian.org/debian wheezy main contrib non-free" >> /etc/apt/sources.list
-   echo "deb-src http://ftp.debian.org/debian wheezy main contrib non-free" >> /etc/apt/sources.list
-   apt-get update -y
-   apt-get purge -y --force-yes vsftpd
-   apt-get clean && apt-get autoclean
-   apt-get -y install checkinstall expect mediainfo sudo libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common php5-fpm irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent htop
-fi
+# if [ $deb7 = "yes" ]; then
+#    echo "deb http://ftp.debian.org/debian wheezy main contrib non-free" >> /etc/apt/sources.list
+#    echo "deb-src http://ftp.debian.org/debian wheezy main contrib non-free" >> /etc/apt/sources.list
+#    apt-get update -y
+#    apt-get purge -y --force-yes vsftpd
+#    apt-get clean && apt-get autoclean
+#    apt-get -y install checkinstall expect mediainfo sudo libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common php5-fpm irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent htop
+# fi
 
 ## Create user
-userDir=/home/$usernamevar
-echo "userpw=\`perl -e 'print crypt(\""$passvar"\", \"salt\"),\"\\n\"'\`" >tmp
-echo "useradd "$usernamevar "-s\/bin\/bash -U -m -p\$userpw" >>tmp
-bash tmp
-shred -n 6 -u -z tmp
-echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
-echo $usernamevar > $flizkdDir/user
+# userDir=/home/$usernamevar
+# echo "userpw=\`perl -e 'print crypt(\""$passvar"\", \"salt\"),\"\\n\"'\`" >tmp
+# echo "useradd "$usernamevar "-s\/bin\/bash -U -m -p\$userpw" >>tmp
+# bash tmp
+# shred -n 6 -u -z tmp
+# echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
+# echo $usernamevar > $flizkdDir/user
 
 ## Install nginx & configure php-fpm
-install_nginx 1.4.3 www-data
-configure_fpm www-data
+# install_nginx 1.4.3 www-data
+# configure_fpm www-data
 
 cd $cfgDir
    /etc/init.d/vsftpd stop
