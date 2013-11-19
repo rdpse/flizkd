@@ -2,10 +2,17 @@
 
 ## PATHS
 flizkdDir=/root/flizkd
-cfgDir=$flizkdDir/cfg
-scriptsDir=$flizkdDir/scripts
-srcDir=$flizkdDir/source
+cfgDir="$flizkdDir"/cfg
+rutCfgDir="$cfgDir"/rutorrent
+rtCfgDir="$cfgDir"/rtorrent
+delCfgDir="$cfgDir"/deluge
+ngxCfgDir="$cfgDir"/nginx
+scriptsDir="$flizkdDir"/scripts
+initScripts="$scriptsDir"/init_scripts
+srcDir="$flizkdDir"/source
 wwwDir=/var/www
+destDir=/opt
+logfile="$flizkdDir"/flizkd.log
 
 ## Check if Flizkd has been previously ran
 if [ ! -f /etc/flizkd1.0 ]; then
@@ -19,6 +26,24 @@ else
    exit 0
 fi
 
+## Progress and log functions from VladGh's LEMP
+progress() {
+  while ps |grep $!; do
+    echo -en "\b-" >&3; sleep 1
+    echo -en "\b\\" >&3; sleep 1
+    echo -en "\b|" >&3; sleep 1
+    echo -en "\b/" >&3; sleep 1
+  done
+  echo -e '\E[47;34m\b\b\b\b'"Done" >&3; tput sgr0 >&3
+}
+
+log2file() {
+  # Logging everything to LOG_FILE
+  exec 3>&1 4>&2
+  trap 'exec 2>&4 1>&3' 0 1 2 3
+  exec 1>${LOG_FILE} 2>&1
+}
+
 ## Check if certain packages are installed
 check_install () {   
     local checkPkg=$(dpkg-query -l | grep $1 | wc -l)
@@ -28,6 +53,9 @@ check_install () {
        apt-get -y install $1
     fi
 }
+
+## Log everything
+log2file
 
 ## OS Check relies on lsb-release
 check_install lsb-release
@@ -171,46 +199,51 @@ opt_app () {
        done
 } 
 
-## version, user/group
+## Some of the code was borrowed from VladGh's LEMP
 install_nginx () {
 
    ngConf=/etc/nginx
    ngSsl="$ngConf"/ssl
+   local passwdFile="$ngConf"/.passwd
    local ngLogDir=/var/log/nginx
    local ngStateDir=/var/lib/nginx
    local ngConfFile="$ngConf"/nginx.conf
    local defCfg="$ngConf"/defcfgs
    local sitesAvail="$ngConf"/sites-available
    local sitesEnabl="$ngConf"/sites-enabled
-   local rutSiteFile="$sitesAvail"/rutorrent
+   local defVhostFile="$sitesAvail"/default
+   local defSslVhostFile="$sitesAvail"/default
 
-     cd $srcDir
-       wget http://nginx.org/download/nginx-"$1".tar.gz 
-       tar zxvf nginx-"$1".tar.gz       
-       cd nginx-"$1"/
-        ./configure \
-        --prefix=/usr \
-        --conf-path="$ngConf"/nginx.conf \
-        --error-log-path="$ngLogDir"/error.log \
-        --pid-path=/var/run/nginx.pid \
-        --lock-path=/var/lock/nginx.lock \
-        --user="$2" \
-        --group="$2" \
-        --http-log-path="$ngLogDir"/nginx/access.log \
-        --with-http_dav_module \
-        --http-client-body-temp-path="$ngStateDir"/body \
-        --http-proxy-temp-path="$ngStateDir"/proxy \
-        --with-http_stub_status_module \
-        --with-http_ssl_module \
-        --http-fastcgi-temp-path="$ngStateDir"/fastcgi \
-        --with-debug 
-
-        make
-        checkinstall -y
-    
     if [ ! -d $wwwDir ]; then
        mkdir $wwwDir  
     fi
+
+    cd $srcDir
+       wget http://nginx.org/download/nginx-"$1".tar.gz 
+       tar zxvf nginx-"$1".tar.gz       
+       cd nginx-"$1"/
+       echo 'Configuring nginx...' >&3
+        ./configure \
+        --prefix=/opt \
+        --conf-path="$ngConf"/nginx.conf \
+        --http-log-path="$ngLogDir"/access.log \
+        --error-log-path="$ngLogDir"/error.log \
+        --pid-path=/var/run/nginx.pid \
+        --lock-path=/var/lock/nginx.lock \
+        --with-http_stub_status_module \
+        --with-http_ssl_module \
+        --with-http_realip_module \
+        --with-http_gzip_static_module \
+        --with-ipv6 \
+        --without-mail_pop3_module \
+        --without-mail_imap_module \
+        --without-mail_smtp_module & progress
+        
+        echo 'Compiling...' >&3
+        make & progress
+
+        echo 'Installing...' >&3
+        checkinstall -y & progress
 
     if [ ! -d $ngStateDir ]; then
        mkdir $ngStateDir  
@@ -219,27 +252,39 @@ install_nginx () {
     if [ ! -d $ngLogDir ]; then
        mkdir $ngLogDir
     fi 
-
-    mv /usr/html/index.html $wwwDir
-    mkdir $defCfg && mkdir $ngSsl && mkdir $sitesAvail && mkdir $sitesEnabl
-
-    cd $ngConf
-       mv *.default $defCfg
    
-    cd $cfgDir  
-       rm $ngConf/nginx.conf && cp nginx.conf $ngConf
-       sed -i 's_<wwwUser>_'$2'_' $ngConfFile
-       sed -i 's_<coresNo>_'$coresNo'_' $ngConfFile
-       sed -i 's_<ngLogDir>_'$ngLogDir'_g' $ngConfFile
-       sed -i 's_<sitesEnabl>_'$sitesEnabl'_g' $ngConfFile
+    cd $ngxCfgDir  
+       mv $ngConf /etc/nginx-backup
+       cp -r nginx /etc/nginx
+       mkdir $sitesEnabl 
+       sed -i 's_<ngLogDir>_'$ngLogDir'_g' $ngConfFile   
 
-       cp rutorrent $sitesAvail
-       ln -s $rutSiteFile $sitesEnabl/rutorrent
-       sed -i 's_<wwwDir>_'$wwwDir'_g' $rutSiteFile
-       sed -i 's_<ngConf>_'$ngConf'_g' $rutSiteFile
-       sed -i 's_<usernamevar>_'$usernamevar'_g' $rutSiteFile
-       sed -i 's_<ngSsl>_'$ngSsl'_g' $rutSiteFile
-    
+       ln -s $defVhostFile $sitesEnabl/default
+       ln -s $defSslVhostFile $sitesEnabl/default-ssl
+       sed -i 's_<passwdfile>'$passwdFile'_g' $defVhostFile && sed -i 's_<passwdfile>'$passwdFile'_g' $defSslVhostFile
+       sed -i 's_<RPCuser>_'RPC.'_g' $defVhostFile && sed -i 's_<RPCuser>_'RPC.$usernamevar'_g' $defSslVhostFile
+       sed -i 's_<ngSsl>_'$ngSsl'_g' $defSslVhostFile
+
+    htpasswd -b -c $passwdFile $usernamevar $passvar
+    cd $ngSsl
+       openssl req -x509 -nodes -days 3650 -subj "/CN=EB/O=EliteBox" -newkey rsa:1024 -keyout rutorrent.key -out rutorrent.crt
+       chmod 600 rutorrent.key
+
+    chown -R www-data:www-data $ngLogDir
+    echo '$ngLogDir/*.log {
+    weekly
+    missingok
+    rotate 52
+    compress
+    delaycompress
+    notifempty
+    create 640 root adm
+    sharedscripts
+    postrotate
+    [ ! -f /var/run/nginx.pid ] || kill -USR1 `cat /var/run/nginx.pid`
+    endscript
+    }' > /etc/logrotate.d/nginx
+        
     ##init script
     cp nginx /etc/init.d/nginx
     chmod +x /etc/init.d/nginx
@@ -248,30 +293,75 @@ install_nginx () {
     else    
        insserv -dv nginx
     fi
+
 }
 
-configure_fpm () {
-   
-   local fpmDefConfFile="$cfgDir"/php-fpm.conf 
-   local fpmDir=/etc/php5/fpm
-   local fpmLogDir=/var/log/php-fpm/
-   local fpmConfFile="$fpmDir"/php-fpm.conf 
+## Most of the code was borrowed from VladGh's LEMP
+install_php () {
+  
+  local libraries="libcurl4-openssl-dev libgd2-xpm-dev libjpeg-dev libpng3-dev libxpm-dev libfreetype6-dev libt1-dev libmcrypt-dev libxslt1-dev bzip2 libbz2-dev libxml2-dev libevent-dev libltdl-dev libmagickwand-dev libmagickcore-dev imagemagick libreadline-dev libc-client-dev libsnmp-dev snmpd snmp libpq-dev"
+  local archB=$(arch)-linux-gnu
+  
+  # Install all PHP Libraries
+  echo 'Installing libraries...' >&3
+  apt-get -y install $libraries & progress
 
-   mkdir $fpmLogDir
-   chown -R $1 $fpmLogDir
+  # Download PHP
+  echo "Downloading and extracting PHP-$1..." >&3
+  wget -O /tmp/php-"$1".tar.gz "http://us1.php.net/distributions/php-$1.tar.gz" & progress
+  cd /tmp
+  tar xzvf php-"$1".tar.gz
 
-   cp $fpmDefConfFile $fpmDir
-   sed -i '_<wwwUser>_'$1'_g' $fpmConfFile
-   chmod 644 "$fpmDir"/php.ini
-   
-   chmod +x /etc/init.d/php5-fpm
-   update-rc.d php5-fpm defaults
-   
-   # get a timezone  
-   TIMEZONE=$([ -f /etc/timezone ] && cat /etc/timezone | sed "s/\//\\\\\//g")
-   sed -i "s/^\;date\.timezone.*$/date\.timezone = \"${TIMEZONE}\" /g" /etc/php5/php.ini
+  [ -f /usr/lib/${archB}/libjpeg.so ] && ln -fs /usr/lib/${archB}/libjpeg.so /usr/lib/
+  [ -f /usr/lib/${archB}/libpng.so ] && ln -fs /usr/lib/${archB}/libpng.so /usr/lib/
+  [ -f /usr/lib/${archB}/libXpm.so ] && ln -fs /usr/lib/${archB}/libXpm.so /usr/lib/
+  [ -f /usr/lib/${archB}/libmysqlclient.so ] && ln -fs /usr/lib/${archB}/libmysqlclient.so /usr/lib/
+  [ -d /usr/lib/${archB}/mit-krb5 ] && ln -fs /usr/lib/${archB}/mit-krb5/lib*.so /usr/lib/
 
-   service php5-fpm start   
+  # Compile php source
+  cd /tmp/php-"$1"
+  ./buildconf --force
+  echo 'Configuring PHP (Please be patient, this will take a while...)' >&3
+  ./configure $PHP_CONFIGURE_ARGS & progress
+
+  echo 'Compiling PHP (Please be patient, this will take a while...)' >&3
+  make -j8 & progress
+  echo 'Installing PHP...' >&3
+  checkinstall -y & progress
+
+  # Copy configuration files
+  echo 'Setting up PHP...' >&3
+  sed -i "s~@destDir@~$destDir~" "$initScripts"/php5-fpm
+  mkdir -p /etc/php5/conf.d /var/log/php5-fpm
+  cp -f php.ini-production /etc/php5/php.ini
+  cp "$cfgDir"/php-fpm.conf /etc/php5/php-fpm.conf
+  cp "$initScripts"/php5-fpm /etc/init.d/php5-fpm
+
+  # Prepare service
+  chmod +x /etc/init.d/php5-fpm
+  update-rc.d -f php5-fpm defaults
+
+  # The newer versions of php complain if a time zone is not set on php.ini (so we grab the system's one)
+  TIMEZONE=$([ -f /etc/timezone ] && cat /etc/timezone | sed "s/\//\\\\\//g")
+  sed -i "s/^\;date\.timezone.*$/date\.timezone = \"${TIMEZONE}\" /g" /etc/php5/php.ini
+
+  chown -R www-data:www-data /var/log/php5-fpm & progress
+
+  # Create log rotation script
+  echo '/var/log/php5-fpm/*.log {
+  weekly
+  missingok
+  rotate 52
+  compress
+  delaycompress
+  notifempty
+  create 640 www-data www-data
+  sharedscripts
+  postrotate
+  [ ! -f /var/run/php5-fpm.pid ] || kill -USR1 `cat /var/run/php5-fpm.pid`
+  endscript
+  }' > /etc/logrotate.d/php5-fpm
+
 }
 
 ## lib_ver, rt_ver
@@ -324,29 +414,35 @@ install_rtorrent () {
             svn co http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
             svn co http://rutorrent-instantsearch.googlecode.com/svn/trunk/ rutorrent-instantsearch
             svn co http://svn.rutorrent.org/svn/filemanager/trunk/filemanager
-
+  
    chown -R www-data:www-data $wwwDir
    chmod -R 755 $wwwDir
    chmod -R 777 "$rutDir"/share
    chmor -R 755 "$rutPluginsDir"/filemanager/scripts
    chmod 777 /tmp/
 
+   cd "$rutPluginsDir"/filemanager
+      sed -i 's_''_'/usr/bin'_' conf.php
+      sed '
+      /$pathToExternals['tar']/ a\
+      $pathToExternals['bzip2'] = '/bin/';'
+
    cd $rutUserConfDir
       mkdir -p $usernamevar/plugins/autodl-irssi
-      cp -f "$cfgDir"/config.php $rutConfDir
+      cp -f "$rutCfgDir"/config.php $rutConfDir
       sed -i 's/<username>/'$usernamevar'/' "$rutConfDir"/config.php
       cp "$rutConfDir"/config.php "$rutUserConfDir"/$usernamevar/config.php
       cp "$rutPluginsDir"/autodl-irssi/_conf.php "$rutPluginsDir"/autodl-irssi/conf.php
-      sed -e 's_<adlPort>_'$adlPort'_' -e 's_<pass>_'$usernamevar'_' "$cfgDir"/adlconf > "$rutUserConfDir"/$usernamevar/plugins/autodl-irssi/conf.php
+      sed -e 's_<adlPort>_'$adlPort'_' -e 's_<pass>_'$usernamevar'_' "$rutCfgDir"/plugins/adlconf > "$rutUserConfDir"/$usernamevar/plugins/autodl-irssi/conf.php
 
-   cp "$cfgDir"/rtorrent /etc/init.d/
+   cp "$initScripts"/rtorrent /etc/init.d/
    sed -i 's_<username>_'$usernamevar'_' /etc/init.d/rtorrent
    cd /etc/init.d/
       chmod +x rtorrent
       update-rc.d rtorrent defaults
    
    rm "$userDir"/.rtorrent.rc
-   sed 's_<username>_'$usernamevar'_' "$cfgDir"/.rtorrent.rc > "$userDir"/.rtorrent.rc
+   sed 's_<username>_'$usernamevar'_' "$rtCfgDir"/.rtorrent.rc > "$userDir"/.rtorrent.rc
    echo "check_hash = no" >> "$userDir"/.rtorrent.rc
 
    mkdir "$userDir"/downloads
@@ -355,7 +451,7 @@ install_rtorrent () {
    mkdir -p "$userDir"/rtorrent/.session
    mkdir -p "$userDir"/.irssi/scripts/autorun
    
-   sed 's_<username>_'$usernamevar'_' "$cfgDir"/check-rtorrent > "$userDir"/scripts/check-rt
+   sed 's_<username>_'$usernamevar'_' "$rtCfgDir"/check-rtorrent > "$userDir"/scripts/check-rt
    chmod +x "$userDir"/scripts/check-rt
    
    cd "$userDir"/.irssi/scripts
@@ -363,7 +459,7 @@ install_rtorrent () {
       unzip -o autodl-irssi-v*.zip
       rm autodl-irssi-v*.zip
       cp autodl-irssi.pl autorun/
-      mv "$cfgDir"/iFR.tracker AutodlIrssi/trackers/
+      mv "$rutCfgDir"/plugins/iFR.tracker AutodlIrssi/trackers/
 
    if [ $usesha = "yes" ]; then
       cp AutodlIrssi/MatchedRelease.pm matchtemp
@@ -378,24 +474,18 @@ install_rtorrent () {
    echo "gui-server-port = "$adlPort >> $userDir/.autodl/autodl2.cfg
    echo "gui-server-password = dl"$usernamevar >> "$userDir"/.autodl/autodl2.cfg
    chown -R $usernamevar:$usernamevar "$userDir"/
-
-   cd $scriptsDir
-      htpasswd -b -c $ngConf $usernamevar $passvar
-      cd $ngSsl
-      openssl req -x509 -nodes -days 3650 -subj "/CN=EB/O=EliteBox" -newkey rsa:1024 -keyout rutorrent.key -out rutorrent.crt
-      chmod 600 rutorrent.key
    
    /etc/init.d/nginx restart
 }
 
 ## version
 install_deluge () {
+
    mkdir -p "$userDir"/.config/deluge
    mkdir "$userDir"/deluge_watch
-   cp "$cfgDir"/web.conf "$userDir"/.config/deluge/
-   sed 's/<username>/'$usernamevar'/' "$cfgDir"/core.conf > "$userDir"/.config/deluge/core.conf
-   sh makepem.sh "$ngSsl"/deluge.cert.pem "$ngSsl"/deluge.key.pem deluge
-   add_deluge_cron=yes       
+   cp "$delCfgDir"/web.conf "$userDir"/.config/deluge/
+   sed 's/<username>/'$usernamevar'/' "$delCfgDir"/core.conf > "$userDir"/.config/deluge/core.conf
+   sh makepem.sh "$ngSsl"/deluge.cert.pem "$ngSsl"/deluge.key.pem deluge      
    if [ $ubuntu = "yes" ]; then            
       if [ $ub1011 = "yes" ]; then
          apt-get install -y python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako
@@ -426,11 +516,12 @@ install_deluge () {
     cd $scriptsDir
        python chdelpass.py "$userDir"/.config/deluge
        shred -n 6 -u -z /root/pass.txt
+
 }
 
 add_cron () {
    if [ $1 = "deluge" ]; then
-      sed 's/<username>/'$usernamevar'/' "$cfgDir"/check-deluge > $userDir/scripts/check-deluge
+      sed 's/<username>/'$usernamevar'/' "$delCfgDir"/check-deluge > $userDir/scripts/check-deluge
       chown $usernamevar:$usernamevar "$userDir"/scripts/check-deluge
       chmod +x "$userDir"/scripts/check-deluge
       echo "@reboot "$userDir"/scripts/check-deluge >> /dev/null 2>&1" >> tempcron
@@ -484,37 +575,21 @@ install_znc () {
       checkinstall -y
 }
 
-install_vnc () {
+## Code borrowed from VladGh's LEMP
+set_paths() {
+  # Make the nginx and PHP paths global.
+  echo 'Setting up paths...' >&3
+  export PATH="${PATH}:$destDir/nginx/sbin:$destDir/php5/bin:$destDir/php5/sbin"
+  echo "PATH=\"$PATH\"" > /etc/environment
+}
 
-  local vncBin=/usr/bin/vncserver
-  local vncExec="$userDir"/.vnc
-  mkdir $vncDir
-
-  apt-get -y install vnc4server xorg xfce4 xfce4-goodies xfce4-session xdg-utils xfce4-power-manager
-  #python $scriptsDir/vncpasswd.py -f $vncDir/passwd $passvar 
-  
-  cp -f "$cfgDir"/xstartup $vncDir/xstartup
-  chmod +x "$vncDir"/xstartup
-  chown -R $usernamevar $userDir
-
-  /usr/bin/expect <<EOF
-  spawn "$vncExec"
-  expect "Password:"
-  send "$passvar\r"
-  expect "Verify:"
-  send "$passvar\r"
-  expect eof
-  exit
-EOF
-
-  cp "$cfgDir"/vncserver /etc/init.d
-  sed -i 's/<usernamevar>/'$usernamevar'/' /etc/init.d/vncserver 
-  chmod +x /etc/init.d/vncserver
-  if [ $ubuntu = "yes" ]; then
-     update-rc.d vncserver defaults
-  else
-     insserv -dv vncserver
-  fi  
+## Code borrowed from VladGh's LEMP
+restart_servers() {
+  # Restart both nginx and PHP
+  echo 'Restarting servers...' >&3
+  invoke-rc.d php5-fpm restart
+  sleep 1
+  invoke-rc.d nginx restart
 }
 
 echo
@@ -585,82 +660,84 @@ cd /root
 ## Reduce the percentage of reserved blocks
 tune2fs -m .5 $homePart
 
-apt-get update -y
-
 if [ $ksCheck = "kimsufi" ]; then
    if [ -f .ssh/authorized_keys2 ]; then
       rm .ssh/authorized_keys2
    fi   
 fi
 
-# if [ $ubuntu = "yes" ]; then
-#    echo grub-pc hold | dpkg --set-selections
-# else
-#    echo mdadm hold | dpkg --set-selections
-# fi
+if [ $ubuntu = "yes" ]; then
+   echo grub-pc hold | dpkg --set-selections
+else
+   echo mdadm hold | dpkg --set-selections
+fi
 
 apt-get upgrade -y
 
-# if [ $osVersion = "12.04" ]; then
-#    apt-get install -y python-software-properties
-#    apt-get update -y
-#    apt-get install -y checkinstall expect libpcre3 libpcre3-dev libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap htop apache2-utils
-#    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.62-1_amd64.Debian_5.deb -O mediainfo.deb
-#    wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.62-1_amd64.Ubuntu_12.04.deb -O libmediainfo.deb
-#    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.xUbuntu_12.04.deb -O libzen.deb
-#    dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
-# fi 
+if [ $osVersion = "12.04" ]; then
+   apt-get install -y python-software-properties
+   apt-get update -y
+   apt-get install -y checkinstall expect libpcre3 libpcre3-dev libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap htop apache2-utils
+   wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.62-1_amd64.Debian_5.deb -O mediainfo.deb
+   wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.62-1_amd64.Ubuntu_12.04.deb -O libmediainfo.deb
+   wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.xUbuntu_12.04.deb -O libzen.deb
+   dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
+fi 
 
-# if [[ $osVersion = "12.10" || $osVersion = "13.04" || $osVersion = "13.10" ]]; then
-#    apt-get install -y python-software-properties
-#    apt-get update -y
-#    apt-get install -y checkinstall expect mediainfo libpcre3 libpcre3-dev libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap htop apache2-utils
-# fi
+if [[ $osVersion = "12.10" || $osVersion = "13.04" || $osVersion = "13.10" ]]; then
+   apt-get install -y python-software-properties
+   apt-get update -y
+   apt-get -y install checkinstall mediainfo libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl apache2-utilsirssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev python-makolibrsvg2-dev xdg-utils  vsftpd automake libtool ffmpeg nmap mktorrent htopbinutils cpp flex gcc libc6-dev m4 libpopt-dev make perl perl-modules openssl autoconf2.13 gnu-standards bison zlib1g-dev ntp ntpdate autotools-dev g++ psmisc re2c
+fi
 
-# if [ $ub1011x = "yes" ]; then
-#    apt-get install -y python-software-properties
-#    apt-get update -y
-#    apt-get install -y checkinstall expect libpcre3 libpcre3-dev libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap htop apache2-utils
-#    wget http://sourceforge.net/projects/mediainfo/files/binary/libmediainfo0/0.7.62/libmediainfo0_0.7.62-1_amd64.Ubuntu_10.04.deb -O libmediainfo.deb
-#    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.xUbuntu_10.04.deb -O libzen.deb
-#    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.62-1_amd64.Debian_5.deb -O mediainfo.deb
-#    dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
-# fi
+if [ $ub1011x = "yes" ]; then
+   apt-get install -y python-software-properties
+   apt-get update -y
+   apt-get install -y checkinstall expect libpcre3 libpcre3-dev libncurses5 libncurses5-dev libsigc++-2.0-dev libcurl4-openssl-dev build-essential screen curl php5 php5-cgi php5-cli php5-common php5-curl php5-fpm libwww-perl libwww-curl-perl irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl ffmpeg vsftpd unzip unrar rar zip python htop mktorrent nmap htop apache2-utils
+   wget http://sourceforge.net/projects/mediainfo/files/binary/libmediainfo0/0.7.62/libmediainfo0_0.7.62-1_amd64.Ubuntu_10.04.deb -O libmediainfo.deb
+   wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.29-1_amd64.xUbuntu_10.04.deb -O libzen.deb
+   wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.62-1_amd64.Debian_5.deb -O mediainfo.deb
+   dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
+fi
 
-# if [ $deb6 = "yes" ]; then
-#    echo "deb http://ftp.debian.org/debian squeeze main contrib non-free" >> /etc/apt/sources.list
-#    echo "deb-src http://ftp.debian.org/debian squeeze main contrib non-free" >> /etc/apt/sources.list
-#    apt-get update -y
-#    apt-get purge -y --force-yes vsftpd lighttpd apache2 apache2-utils
-#    apt-get clean && apt-get autoclean
-#    apt-get -y install checkinstall expect libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common php5-fpm irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen sudo rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent htop
-#    wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.58-1_amd64.Debian_6.0.deb -O mediainfo.deb
-#    wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.58-1_amd64.Debian_6.0.deb -O libmediainfo.deb
-#    wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.26-1_amd64.Debian_6.0.deb -O libzen.deb
-#    dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
-# fi
+if [ $deb6 = "yes" ]; then
+   echo "deb http://ftp.debian.org/debian squeeze main contrib non-free" >> /etc/apt/sources.list
+   echo "deb-src http://ftp.debian.org/debian squeeze main contrib non-free" >> /etc/apt/sources.list
+   apt-get update -y
+   apt-get purge -y --force-yes vsftpd lighttpd apache2 apache2-utils
+   apt-get clean && apt-get autoclean
+   apt-get -y install checkinstall sudo libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl apache2-utilsirssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha1-perl libjson-perl libjson-xs-perl libxml-libxslt-perl rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev python-makolibrsvg2-dev xdg-utils  vsftpd automake libtool ffmpeg nmap mktorrent htopbinutils cpp flex gcc libc6-dev m4 libpopt-dev make perl perl-modules openssl autoconf2.13 gnu-standards bison zlib1g-dev ntp ntpdate autotools-dev g++ psmisc re2c
+   wget http://downloads.sourceforge.net/mediainfo/mediainfo_0.7.58-1_amd64.Debian_6.0.deb -O mediainfo.deb
+   wget http://downloads.sourceforge.net/mediainfo/libmediainfo0_0.7.58-1_amd64.Debian_6.0.deb -O libmediainfo.deb
+   wget http://downloads.sourceforge.net/zenlib/libzen0_0.4.26-1_amd64.Debian_6.0.deb -O libzen.deb
+   dpkg -i libzen.deb libmediainfo.deb mediainfo.deb
+fi
 
-# if [ $deb7 = "yes" ]; then
-#    echo "deb http://ftp.debian.org/debian wheezy main contrib non-free" >> /etc/apt/sources.list
-#    echo "deb-src http://ftp.debian.org/debian wheezy main contrib non-free" >> /etc/apt/sources.list
-#    apt-get update -y
-#    apt-get purge -y --force-yes vsftpd
-#    apt-get clean && apt-get autoclean
-#    apt-get -y install checkinstall expect mediainfo sudo libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl php5-cgi apache2-utils php5-cli php5-common php5-fpm irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl screen rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako vsftpd automake libtool ffmpeg nmap mktorrent htop
-# fi
+if [ $deb7 = "yes" ]; then
+   echo "deb http://ftp.debian.org/debian wheezy main contrib non-free" >> /etc/apt/sources.list
+   echo "deb-src http://ftp.debian.org/debian wheezy main contrib non-free" >> /etc/apt/sources.list
+   apt-get update -y
+   apt-get purge -y --force-yes vsftpd
+   apt-get clean && apt-get autoclean
+   apt-get -y install checkinstall mediainfo sudo libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl apache2-utilsirssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev python-makolibrsvg2-dev xdg-utils  vsftpd automake libtool ffmpeg nmap mktorrent htopbinutils cpp flex gcc libc6-dev m4 libpopt-dev make perl perl-modules openssl autoconf2.13 gnu-standards bison zlib1g-dev ntp ntpdate autotools-dev g++ psmisc re2c
+fi
 
 ## Create user
-# userDir=/home/$usernamevar
-# echo "userpw=\`perl -e 'print crypt(\""$passvar"\", \"salt\"),\"\\n\"'\`" >tmp
-# echo "useradd "$usernamevar "-s\/bin\/bash -U -m -p\$userpw" >>tmp
-# bash tmp
-# shred -n 6 -u -z tmp
-# echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
-# echo $usernamevar > $flizkdDir/user
+userDir=/home/$usernamevar
+echo "userpw=\`perl -e 'print crypt(\""$passvar"\", \"salt\"),\"\\n\"'\`" >tmp
+echo "useradd "$usernamevar "-s\/bin\/bash -U -m -p\$userpw" >>tmp
+bash tmp
+shred -n 6 -u -z tmp
+echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
+echo $usernamevar > $flizkdDir/user
 
 ## Install nginx & configure php-fpm
-# install_nginx 1.4.3 www-data
-# configure_fpm www-data
+install_nginx 1.5.6
+install_php 5.5.6
+
+# Make nginx and PHP paths global & restart them both
+set_paths
+restart_servers
 
 cd $cfgDir
    /etc/init.d/vsftpd stop
@@ -691,16 +768,6 @@ if [ $znc_yn = "yes" ]; then
    install_znc latest 
 fi
 
-if [ $vnc_yn = "yes" ]; then
-   install_vnc
-   
-   #clear
-   #echo 
-   #echo "Enter a password between 6 and 8 characters long."
-   #echo "This will be the password you'll use to access your VNC desktop."
-   su -l $usernamevar -c vncserver
-fi
-
 echo
 
 ## FINAL OUTPUT
@@ -726,10 +793,6 @@ if [ $znc_yn = "yes" ]; then
    echo `tput setaf 3`"ZNC is installed, but you will need to configure it yourself, to do this,"
    echo "you will need to log into SSH with the user you created and run the following command:"
    echo "'znc --makeconf'"
-fi
-
-if [ $vnc_yn = "yes" ]; then
-   echo `tput sgr0`"You can access your VNC Desktop at "`tput setaf 4``tput bold`""$IP":1"`tput sgr0`
 fi
 
 echo
