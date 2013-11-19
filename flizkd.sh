@@ -264,13 +264,14 @@ install_nginx () {
     }' > /etc/logrotate.d/nginx
         
     ##init script
-    cp nginx /etc/init.d/nginx
-    chmod +x /etc/init.d/nginx
-    if [ $ubuntu = "yes" ]; then
-       update-rc.d nginx defaults
-    else    
-       insserv -dv nginx
-    fi
+    cd $initScripts
+       cp nginx /etc/init.d/nginx
+       chmod +x /etc/init.d/nginx
+       if [ $ubuntu = "yes" ]; then
+          update-rc.d nginx defaults
+       else    
+          insserv -dv nginx
+       fi
 
 }
 
@@ -362,6 +363,7 @@ install_php () {
   mkdir -p /etc/php5/conf.d /var/log/php5-fpm
   cp -f php.ini-production /etc/php5/php.ini
   cp "$cfgDir"/php-fpm.conf /etc/php5/php-fpm.conf
+  [ -f /etc/init.d/*fpm*] && rm /etc/init.d/*fpm*
   cp "$initScripts"/php5-fpm /etc/init.d/php5-fpm
 
   # Prepare service
@@ -449,10 +451,11 @@ install_rtorrent () {
    chmod 777 /tmp/
 
    cd "$rutPluginsDir"/filemanager
-      sed -i 's_''_'/usr/bin'_' conf.php
-      # sed '
-      # /$pathToExternals['tar']/ a\
-      # $pathToExternals['bzip2'] = '/bin/';'
+      sed -i "s_''_'/usr/bin/'_g" conf.php
+      sed -i "
+      /\['tar'\]/ a\
+      \$pathToExternals['bzip2'] = '/bin/';
+      " conf.php
 
    cd $rutUserConfDir
       mkdir -p $usernamevar/plugins/autodl-irssi
@@ -746,7 +749,7 @@ if [ $deb7 = "yes" ]; then
    apt-get update -y
    apt-get purge -y --force-yes vsftpd
    apt-get clean && apt-get autoclean
-   apt-get -y install checkinstall mediainfo sudo libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl apache2-utilsirssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev python-makolibrsvg2-dev xdg-utils  vsftpd automake libtool ffmpeg nmap mktorrent htopbinutils cpp flex gcc libc6-dev m4 libpopt-dev make perl perl-modules openssl autoconf2.13 gnu-standards bison zlib1g-dev ntp ntpdate autotools-dev g++ psmisc re2c
+   apt-get -y install checkinstall mediainfo sudo libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl apache2-utils irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev python-mako librsvg2-dev xdg-utils vsftpd automake libtool ffmpeg nmap mktorrent htop binutils cpp flex gcc libc6-dev m4 libpopt-dev make perl perl-modules openssl autoconf2.13 gnu-standards bison zlib1g-dev ntp ntpdate autotools-dev g++ psmisc re2c
 fi
 
 ## Create user
