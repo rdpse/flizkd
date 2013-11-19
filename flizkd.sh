@@ -12,7 +12,6 @@ initScripts="$scriptsDir"/init_scripts
 srcDir="$flizkdDir"/source
 wwwDir=/var/www
 destDir=/opt
-logfile="$flizkdDir"/flizkd.log
 
 ## Check if Flizkd has been previously ran
 if [ ! -f /etc/flizkd1.0 ]; then
@@ -26,24 +25,6 @@ else
    exit 0
 fi
 
-## Progress and log functions from VladGh's LEMP
-progress() {
-  while ps |grep $!; do
-    echo -en "\b-" >&3; sleep 1
-    echo -en "\b\\" >&3; sleep 1
-    echo -en "\b|" >&3; sleep 1
-    echo -en "\b/" >&3; sleep 1
-  done
-  echo -e '\E[47;34m\b\b\b\b'"Done" >&3; tput sgr0 >&3
-}
-
-log2file() {
-  # Logging everything to LOG_FILE
-  exec 3>&1 4>&2
-  trap 'exec 2>&4 1>&3' 0 1 2 3
-  exec 1>${LOG_FILE} 2>&1
-}
-
 ## Check if certain packages are installed
 check_install () {   
     local checkPkg=$(dpkg-query -l | grep $1 | wc -l)
@@ -53,9 +34,6 @@ check_install () {
        apt-get -y install $1
     fi
 }
-
-## Log everything
-log2file
 
 ## OS Check relies on lsb-release
 check_install lsb-release
@@ -222,7 +200,7 @@ install_nginx () {
        wget http://nginx.org/download/nginx-"$1".tar.gz 
        tar zxvf nginx-"$1".tar.gz       
        cd nginx-"$1"/
-       echo 'Configuring nginx...' >&3
+       echo 'Configuring nginx...'
         ./configure \
         --prefix=/opt \
         --conf-path="$ngConf"/nginx.conf \
@@ -237,13 +215,13 @@ install_nginx () {
         --with-ipv6 \
         --without-mail_pop3_module \
         --without-mail_imap_module \
-        --without-mail_smtp_module & progress
+        --without-mail_smtp_module
         
-        echo 'Compiling...' >&3
-        make & progress
+        echo 'Compiling...' 
+        make
 
-        echo 'Installing...' >&3
-        checkinstall -y & progress
+        echo 'Installing...'
+        checkinstall -y 
 
     if [ ! -d $ngStateDir ]; then
        mkdir $ngStateDir  
@@ -303,12 +281,12 @@ install_php () {
   local archB=$(arch)-linux-gnu
   
   # Install all PHP Libraries
-  echo 'Installing libraries...' >&3
-  apt-get -y install $libraries & progress
+  echo 'Installing libraries...'
+  apt-get -y install $libraries
 
   # Download PHP
-  echo "Downloading and extracting PHP-$1..." >&3
-  wget -O /tmp/php-"$1".tar.gz "http://us1.php.net/distributions/php-$1.tar.gz" & progress
+  echo "Downloading and extracting PHP-$1..."
+  wget -O /tmp/php-"$1".tar.gz "http://us1.php.net/distributions/php-$1.tar.gz" 
   cd /tmp
   tar xzvf php-"$1".tar.gz
 
@@ -320,17 +298,66 @@ install_php () {
 
   # Compile php source
   cd /tmp/php-"$1"
-  ./buildconf --force
-  echo 'Configuring PHP (Please be patient, this will take a while...)' >&3
-  ./configure $PHP_CONFIGURE_ARGS & progress
+    ./buildconf --force
+    echo 'Configuring PHP (Please be patient, this will take a while...)' 
+    ./configure \
+      --prefix="$destDir"/php5 \
+      --with-config-file-path=/etc/php5 \
+      --with-config-file-scan-dir=/etc/php5/conf.d \
+      --with-curl \
+      --with-pear \
+      --with-gd \
+      --with-jpeg-dir \
+      --with-png-dir \
+      --with-zlib \
+      --with-xpm-dir \
+      --with-freetype-dir \
+      --with-t1lib \
+      --with-mcrypt \
+      --with-mhash \
+      --with-mysql \
+      --with-pgsql \
+      --with-mysqli \
+      --with-pdo-mysql \
+      --with-pdo-pgsql \
+      --with-openssl \
+      --with-xmlrpc \
+      --with-xsl \
+      --with-bz2 \
+      --with-gettext \
+      --with-readline \
+      --with-fpm-user=www-data \
+      --with-fpm-group=www-data \
+      --with-imap \
+      --with-imap-ssl \
+      --with-kerberos \
+      --with-snmp \
+      --disable-debug \
+      --enable-fpm \
+      --enable-cli \
+      --enable-inline-optimization \
+      --enable-exif \
+      --enable-wddx \
+      --enable-zip \
+      --enable-bcmath \
+      --enable-calendar \
+      --enable-ftp \
+      --enable-mbstring \
+      --enable-soap \
+      --enable-sockets \
+      --enable-shmop \
+      --enable-dba \
+      --enable-sysvsem \
+      --enable-sysvshm \
+      --enable-sysvmsg
 
-  echo 'Compiling PHP (Please be patient, this will take a while...)' >&3
-  make -j8 & progress
-  echo 'Installing PHP...' >&3
-  checkinstall -y & progress
+  echo 'Compiling PHP (Please be patient, this will take a while...)' 
+  make -j8 
+  echo 'Installing PHP...' 
+  checkinstall -y
 
   # Copy configuration files
-  echo 'Setting up PHP...' >&3
+  echo 'Setting up PHP...' 
   sed -i "s~@destDir@~$destDir~" "$initScripts"/php5-fpm
   mkdir -p /etc/php5/conf.d /var/log/php5-fpm
   cp -f php.ini-production /etc/php5/php.ini
@@ -345,7 +372,7 @@ install_php () {
   TIMEZONE=$([ -f /etc/timezone ] && cat /etc/timezone | sed "s/\//\\\\\//g")
   sed -i "s/^\;date\.timezone.*$/date\.timezone = \"${TIMEZONE}\" /g" /etc/php5/php.ini
 
-  chown -R www-data:www-data /var/log/php5-fpm & progress
+  chown -R www-data:www-data /var/log/php5-fpm
 
   # Create log rotation script
   echo '/var/log/php5-fpm/*.log {
@@ -418,14 +445,14 @@ install_rtorrent () {
    chown -R www-data:www-data $wwwDir
    chmod -R 755 $wwwDir
    chmod -R 777 "$rutDir"/share
-   chmor -R 755 "$rutPluginsDir"/filemanager/scripts
+   chmod -R 755 "$rutPluginsDir"/filemanager/scripts
    chmod 777 /tmp/
 
    cd "$rutPluginsDir"/filemanager
       sed -i 's_''_'/usr/bin'_' conf.php
-      sed '
-      /$pathToExternals['tar']/ a\
-      $pathToExternals['bzip2'] = '/bin/';'
+      # sed '
+      # /$pathToExternals['tar']/ a\
+      # $pathToExternals['bzip2'] = '/bin/';'
 
    cd $rutUserConfDir
       mkdir -p $usernamevar/plugins/autodl-irssi
