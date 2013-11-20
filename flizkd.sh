@@ -461,6 +461,10 @@ install_rtorrent () {
       sed -i "s_''_'/usr/bin/'_g" conf.php
       sed -i "
       /\['tar'\]/ a\
+      \$pathToExternals['gzip'] = '/usr/bin/';
+      " conf.php
+      sed -i "
+      /\['gzip'\]/ a\
       \$pathToExternals['bzip2'] = '/bin/';
       " conf.php
 
