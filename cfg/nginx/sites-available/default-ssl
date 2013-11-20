@@ -3,8 +3,8 @@ server {
   listen 443 ssl; # listen also for IPv4 traffic on "regular" IPv4 sockets
 
   #SSL
-  ssl_certificate <ngSsl>/rutorrent.pem
-  ssl_certificate_key <ngSsl>/rutorrent.key
+  ssl_certificate <ngSsl>/default.crt;
+  ssl_certificate_key <ngSsl>/default.key;
 
   # A catch all hostname
   server_name _ "";

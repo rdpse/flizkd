@@ -233,7 +233,7 @@ install_nginx () {
    
     ## Backup the default nginx dir and replace it with the custom one 
     mv $ngConf /etc/nginx-backup
-    cp -r $$ngxCfgDir /etc/nginx
+    cp -r $ngxCfgDir /etc/nginx
     
     cd $ngConf
        mkdir $sitesEnabl 
@@ -241,7 +241,7 @@ install_nginx () {
 
        ln -s $defVhostFile "$sitesEnabl"/default
        ln -s $defSslVhostFile "$sitesEnabl"/default-ssl
-       sed -i 's_<passwdfile>'$passwdFile'_g' $defVhostFile && sed -i 's_<passwdfile>'$passwdFile'_g' $defSslVhostFile
+       sed -i 's_<passwdfile>_'$passwdFile'_g' $defVhostFile && sed -i 's_<passwdfile>_'$passwdFile'_g' $defSslVhostFile
        sed -i 's_<RPCuser>_'RPC.$usernamevar'_g' $defVhostFile && sed -i 's_<RPCuser>_'RPC.$usernamevar'_g' $defSslVhostFile
        sed -i 's_<ngSsl>_'$ngSsl'_g' $defSslVhostFile
 
