@@ -196,14 +196,14 @@ install_nginx () {
        mkdir $wwwDir  
     fi
 
-    cd $srcDir
+    cd /tmp
        wget http://nginx.org/download/nginx-"$1".tar.gz 
        tar zxvf nginx-"$1".tar.gz       
        cd nginx-"$1"/
        echo 'Configuring nginx...'
         ./configure \
-        --prefix=/opt \
-        --conf-path="$ngConf"/nginx.conf \
+        --prefix="$destDir"/nginx \
+        --conf-path=/etc/nginx/nginx.conf \
         --http-log-path="$ngLogDir"/access.log \
         --error-log-path="$ngLogDir"/error.log \
         --pid-path=/var/run/nginx.pid \
@@ -231,22 +231,28 @@ install_nginx () {
        mkdir $ngLogDir
     fi 
    
-    cd $ngxCfgDir  
-       mv $ngConf /etc/nginx-backup
-       cp -r nginx /etc/nginx
+    ## Backup the default nginx dir and replace it with the custom one 
+    mv $ngConf /etc/nginx-backup
+    cp -r $$ngxCfgDir /etc/nginx
+    
+    cd $ngConf
        mkdir $sitesEnabl 
        sed -i 's_<ngLogDir>_'$ngLogDir'_g' $ngConfFile   
 
-       ln -s $defVhostFile $sitesEnabl/default
-       ln -s $defSslVhostFile $sitesEnabl/default-ssl
+       ln -s $defVhostFile "$sitesEnabl"/default
+       ln -s $defSslVhostFile "$sitesEnabl"/default-ssl
        sed -i 's_<passwdfile>'$passwdFile'_g' $defVhostFile && sed -i 's_<passwdfile>'$passwdFile'_g' $defSslVhostFile
-       sed -i 's_<RPCuser>_'RPC.'_g' $defVhostFile && sed -i 's_<RPCuser>_'RPC.$usernamevar'_g' $defSslVhostFile
+       sed -i 's_<RPCuser>_'RPC.$usernamevar'_g' $defVhostFile && sed -i 's_<RPCuser>_'RPC.$usernamevar'_g' $defSslVhostFile
        sed -i 's_<ngSsl>_'$ngSsl'_g' $defSslVhostFile
 
-    htpasswd -b -c $passwdFile $usernamevar $passvar
-    cd $ngSsl
-       openssl req -x509 -nodes -days 3650 -subj "/CN=EB/O=EliteBox" -newkey rsa:1024 -keyout rutorrent.key -out rutorrent.crt
-       chmod 600 rutorrent.key
+       htpasswd -b -c $passwdFile $usernamevar $passvar
+       
+       mkdir $ngSsl 
+       cd $ngSsl
+          openssl req -x509 -nodes -days 3650 -subj "/CN=EB/O=EliteBox" -newkey rsa:1024 -keyout default.key -out default.crt
+          chmod 600 default.key
+
+    cd ~      
 
     chown -R www-data:www-data $ngLogDir
     echo '$ngLogDir/*.log {
@@ -266,6 +272,7 @@ install_nginx () {
     ##init script
     cd $initScripts
        cp nginx /etc/init.d/nginx
+       sed -i 's_<destDir>_'$destDir'_'
        chmod +x /etc/init.d/nginx
        if [ $ubuntu = "yes" ]; then
           update-rc.d nginx defaults
@@ -402,7 +409,7 @@ install_rtorrent () {
    local rutUserConfDir=$rutConfDir/users
    local adlPort=$(perl -e 'print int(rand(65000-64990))+64990')
 
-   cd $srcDir
+   cd /tmp
       svn co http://svn.code.sf.net/p/xmlrpc-c/code/advanced xmlrpc-c
       wget http://libtorrent.rakshasa.no/downloads/libtorrent-"$1".tar.gz && tar zxfv libtorrent-"$1".tar.gz
       wget http://libtorrent.rakshasa.no/downloads/rtorrent-"$2".tar.gz && tar zxfv rtorrent-"$2".tar.gz
@@ -519,7 +526,7 @@ install_deluge () {
    if [ $ubuntu = "yes" ]; then            
       if [ $ub1011 = "yes" ]; then
          apt-get install -y python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako
-         cd $srcDir
+         cd /tmp
             wget http://download.deluge-torrent.org/source/deluge-"$1".tar.gz && tar zxfv deluge-"$1".tar.gz
             rm deluge-"$1".tar.gz
          cd deluge-"$1"
@@ -533,7 +540,7 @@ install_deluge () {
       fi
     fi
     if [ $debian = "yes" ]; then
-       cd $srcDir
+       cd /tmp
           wget http://download.deluge-torrent.org/source/deluge-"$1".tar.gz && tar xvzf deluge-"$1".tar.gz
           rm deluge-"$1".tar.gz
        cd deluge-"$1"
@@ -586,7 +593,7 @@ install_webmin () {
       dpkg -i webmin_*_all.deb
    fi
    if [ $debian = "yes" ]; then
-      cd $srcDir
+      cd /tmp
       wget http://www.webmin.com/download/deb/webmin-"$1".deb
       dpkg -i webmin_*_all.deb
    fi
@@ -595,7 +602,7 @@ install_webmin () {
 ## version
 install_znc () {
    apt-get -y install build-essential libssl-dev libperl-dev pkg-config libc-ares-dev 
-   cd $srcDir
+   cd /tmp
    wget http://znc.in/releases/znc-"$1".tar.gz
    tar -xzvf znc-"$1".tar.gz
    rm znc-"$1".tar.gz
@@ -608,7 +615,7 @@ install_znc () {
 ## Code borrowed from VladGh's LEMP
 set_paths() {
   # Make the nginx and PHP paths global.
-  echo 'Setting up paths...' >&3
+  echo 'Setting up paths...'
   export PATH="${PATH}:$destDir/nginx/sbin:$destDir/php5/bin:$destDir/php5/sbin"
   echo "PATH=\"$PATH\"" > /etc/environment
 }
@@ -616,7 +623,7 @@ set_paths() {
 ## Code borrowed from VladGh's LEMP
 restart_servers() {
   # Restart both nginx and PHP
-  echo 'Restarting servers...' >&3
+  echo 'Restarting servers...'
   invoke-rc.d php5-fpm restart
   sleep 1
   invoke-rc.d nginx restart
@@ -683,7 +690,7 @@ echo
 
 apt-get -y install subversion
 cd /root
-   mkdir $flizkdDir $srcDir && cd $flizkdDir
+   mkdir $flizkdDir && cd $flizkdDir
    svn co https://github.com/mindfk/flizkd/trunk/cfg
    svn co https://github.com/mindfk/flizkd/trunk/scripts
 

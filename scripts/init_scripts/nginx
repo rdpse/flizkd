@@ -10,7 +10,7 @@
 
 # Author: Sergey Budnevitch <sb@nginx.com>
 
-INSTALL_DIR='@DESTINATION_DIR@/nginx'
+INSTALL_DIR='<destDir>/nginx'
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC=nginx
 NAME=nginx
