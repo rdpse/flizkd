@@ -14,7 +14,7 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="PHP5 FastCGI Process Manager"
 NAME=php-fpm
-DAEMON=@DESTINATION_DIR@/php5/sbin/${NAME}
+DAEMON=<destDir>/php5/sbin/${NAME}
 DAEMON_ARGS="--fpm-config /etc/php5/${NAME}.conf"
 PIDFILE=/var/run/${NAME}.pid
 TIMEOUT=30

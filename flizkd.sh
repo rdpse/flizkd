@@ -190,7 +190,7 @@ install_nginx () {
    local sitesAvail="$ngConf"/sites-available
    local sitesEnabl="$ngConf"/sites-enabled
    local defVhostFile="$sitesAvail"/default
-   local defSslVhostFile="$sitesAvail"/default
+   local defSslVhostFile="$sitesAvail"/default-ssl
 
     if [ ! -d $wwwDir ]; then
        mkdir $wwwDir  
@@ -272,7 +272,8 @@ install_nginx () {
     ##init script
     cd $initScripts
        cp nginx /etc/init.d/nginx
-       sed -i 's_<destDir>_'$destDir'_'
+    cd /etc/init.d/   
+       sed -i 's_<destDir>_'$destDir'_' nginx
        chmod +x /etc/init.d/nginx
        if [ $ubuntu = "yes" ]; then
           update-rc.d nginx defaults
@@ -374,8 +375,12 @@ install_php () {
   cp "$initScripts"/php5-fpm /etc/init.d/php5-fpm
 
   # Prepare service
-  chmod +x /etc/init.d/php5-fpm
-  update-rc.d -f php5-fpm defaults
+  cd /etc/init.d/
+     sed -i 's_<destDir>_'$destDir'_' php5-fpm
+     chmod +x /etc/init.d/php5-fpm
+     update-rc.d -f php5-fpm defaults
+
+  cd ~
 
   # The newer versions of php complain if a time zone is not set on php.ini (so we grab the system's one)
   TIMEZONE=$([ -f /etc/timezone ] && cat /etc/timezone | sed "s/\//\\\\\//g")
