@@ -14,13 +14,12 @@ Run the following commands as root, on a fresh debian-based installation (see li
 - Latest ruTorrent version (currently 3.6) w/ official and 3rd party plugins
 - autodl-irssi
 - mktorrent
-- nginx 1.4.3 (+ ssl certificates)
+- nginx 1.5.6 (+ ssl certificates)
 - vsftpd
 
 ## Optional ##
 - ZNC 1.2
 - Webmin 1.660
-- VNC
 
 ## Supported distros (x64) ##
 - Debian 7
