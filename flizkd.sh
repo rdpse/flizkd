@@ -693,7 +693,7 @@ opt_app rTorrent YES rtorrent_yn
 opt_app Deluge NO deluge_yn
 opt_app Webmin NO webmin_yn
 opt_app ZNC NO znc_yn
-opt_app VNC NO vnc_yn
+# opt_app VNC NO vnc_yn
 
 echo
 
