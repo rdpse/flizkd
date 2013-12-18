@@ -564,10 +564,10 @@ install_deluge () {
        shred -n 6 -u -z /root/pass.txt
 
 }
-
+##mkdir script?
 add_cron () {
    if [ $1 = "deluge" ]; then
-      sed 's/<username>/'$usernamevar'/' "$delCfgDir"/check-deluge > $userDir/scripts/check-deluge
+      sed -i 's/<username>/'$usernamevar'/' "$delCfgDir"/check-deluge > $userDir/scripts/check-deluge
       chown $usernamevar:$usernamevar "$userDir"/scripts/check-deluge
       chmod +x "$userDir"/scripts/check-deluge
       echo "@reboot "$userDir"/scripts/check-deluge >> /dev/null 2>&1" >> tempcron
