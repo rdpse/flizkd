@@ -450,7 +450,7 @@ install_rtorrent () {
          svn co http://rutorrent.googlecode.com/svn/trunk/plugins
          mv plugins $rutDir
          cd $rutPluginsDir
-            svn co https://svn.code.sf.net/p/autodl-irssi/code/trunk/rutorrent/autodl-irssi
+            svn co https://github.com/autodl-community/autodl-rutorrent/trunk autodl-irssi
             svn co http://rutorrent-pausewebui.googlecode.com/svn/trunk/ pausewebui 
             svn co http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
             svn co http://rutorrent-instantsearch.googlecode.com/svn/trunk/ rutorrent-instantsearch
@@ -501,9 +501,9 @@ install_rtorrent () {
    chmod +x "$userDir"/scripts/check-rt
    
    cd "$userDir"/.irssi/scripts
-      wget https://sourceforge.net/projects/autodl-irssi/files/autodl-irssi-v1.31.zip --no-check-certificate
-      unzip -o autodl-irssi-v*.zip
-      rm autodl-irssi-v*.zip
+      wget -O autodl-irssi.zip https://autodl-irssi-community.googlecode.com/files/autodl-irssi-community.zip
+      unzip -o autodl-irssi.zip
+      rm autodl-irssi.zip
       cp autodl-irssi.pl autorun/
       mv "$rutCfgDir"/plugins/iFR.tracker AutodlIrssi/trackers/
 
@@ -778,8 +778,8 @@ echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
 echo $usernamevar > $flizkdDir/user
 
 ## Install nginx & configure php-fpm
-install_nginx 1.5.6
-install_php 5.5.6
+install_nginx 1.5.8
+install_php 5.5.7
 
 # Make nginx and PHP paths global & restart them both
 set_paths
