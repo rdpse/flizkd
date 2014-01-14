@@ -14,7 +14,7 @@ Run the following commands as root, on a fresh debian-based installation (see li
 - Latest ruTorrent version (currently 3.6) w/ official and 3rd party plugins
 - autodl-irssi
 - mktorrent
-- nginx 1.5.6 (+ ssl certificates)
+- nginx 1.5.8
 - vsftpd
 
 ## Optional ##
@@ -22,8 +22,8 @@ Run the following commands as root, on a fresh debian-based installation (see li
 - Webmin 1.660
 
 ## Supported distros (x64) ##
-- Debian 7
-- Debian 6
+- Debian Wheezy (7.x)
+- Debian Squeeze (6.x)
 - Ubuntu Server 13.10
 - Ubuntu Server 13.04
 - Ubuntu Server 12.10
