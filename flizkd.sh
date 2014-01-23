@@ -531,7 +531,8 @@ install_deluge () {
    mkdir "$userDir"/deluge_watch
    cp "$delCfgDir"/web.conf "$userDir"/.config/deluge/
    sed 's/<username>/'$usernamevar'/' "$delCfgDir"/core.conf > "$userDir"/.config/deluge/core.conf
-   sh makepem.sh "$ngSsl"/deluge.cert.pem "$ngSsl"/deluge.key.pem deluge      
+   sh makepem.sh "$ngSsl"/deluge.cert.pem "$ngSsl"/deluge.key.pem deluge 
+        
    if [ $ubuntu = "yes" ]; then            
       if [ $ub1011 = "yes" ]; then
          apt-get install -y python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako
@@ -567,6 +568,7 @@ install_deluge () {
 ##mkdir script?
 add_cron () {
    if [ $1 = "deluge" ]; then
+
       sed -i 's/<username>/'$usernamevar'/' "$delCfgDir"/check-deluge > $userDir/scripts/check-deluge
       chown $usernamevar:$usernamevar "$userDir"/scripts/check-deluge
       chmod +x "$userDir"/scripts/check-deluge
@@ -778,8 +780,8 @@ echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
 echo $usernamevar > $flizkdDir/user
 
 ## Install nginx & configure php-fpm
-install_nginx 1.5.8
-install_php 5.5.7
+install_nginx 1.5.9
+install_php 5.5.8
 
 # Make nginx and PHP paths global & restart them both
 set_paths
