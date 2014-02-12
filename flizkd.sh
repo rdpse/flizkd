@@ -531,8 +531,11 @@ install_deluge () {
    mkdir "$userDir"/deluge_watch
    cp "$delCfgDir"/web.conf "$userDir"/.config/deluge/
    sed 's/<username>/'$usernamevar'/' "$delCfgDir"/core.conf > "$userDir"/.config/deluge/core.conf
+   
+   cd "$scriptsDir"
    sh makepem.sh "$ngSsl"/deluge.cert.pem "$ngSsl"/deluge.key.pem deluge 
-        
+   
+   cd ~        
    if [ $ubuntu = "yes" ]; then            
       if [ $ub1011 = "yes" ]; then
          apt-get install -y python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev librsvg2-dev xdg-utils python-mako
@@ -780,8 +783,8 @@ echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
 echo $usernamevar > $flizkdDir/user
 
 ## Install nginx & configure php-fpm
-install_nginx 1.5.9
-install_php 5.5.8
+install_nginx 1.5.10
+install_php 5.5.9
 
 # Make nginx and PHP paths global & restart them both
 set_paths
@@ -847,7 +850,7 @@ echo
 echo `tput setaf 1`"Your browser may tell you the SSL certificate is not trusted - this is fine"
 echo "as its a self-signed certificate (your connection will still be secure)."`tput sgr0`
 echo
-echo `tput setaf 2``tput bold`"Rebooting... Wait a couple of minutes before trying to access ruTorrent."`tput sgr0`
+echo `tput setaf 2``tput bold`"Rebooting... Wait a couple of minutes before trying to access your server."`tput sgr0`
 echo
 
 sed -i 's/Port 22/Port 22 # fliz_ssh/' /etc/ssh/sshd_config
