@@ -421,17 +421,17 @@ install_rtorrent () {
       cd xmlrpc-c
          ./configure
          make
-         checkinstall
+         checkinstall -y
       cd ../libtorrent-"$1"
          chmod +x configure  
          ./configure
          make
-         checkinstall
+         checkinstall -y
       cd ../rtorrent-"$2"
          chmod +x configure 
          ./configure --with-xmlrpc-c
          make
-         checkinstall
+         checkinstall -y
          ldconfig
    
    cd ../
