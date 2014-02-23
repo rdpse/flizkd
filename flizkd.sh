@@ -421,17 +421,17 @@ install_rtorrent () {
       cd xmlrpc-c
          ./configure
          make
-         make install
+         checkinstall
       cd ../libtorrent-"$1"
          chmod +x configure  
          ./configure
          make
-         make install
+         checkinstall
       cd ../rtorrent-"$2"
          chmod +x configure 
          ./configure --with-xmlrpc-c
          make
-         make install
+         checkinstall
          ldconfig
    
    cd ../
@@ -450,7 +450,7 @@ install_rtorrent () {
          svn co http://rutorrent.googlecode.com/svn/trunk/plugins
          mv plugins $rutDir
          cd $rutPluginsDir
-            svn co https://github.com/autodl-community/autodl-rutorrent/trunk autodl-irssi
+            svn co http://rutorrent.googlecode.com/svn/trunk/plugins
             svn co http://rutorrent-pausewebui.googlecode.com/svn/trunk/ pausewebui 
             svn co http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
             svn co http://rutorrent-instantsearch.googlecode.com/svn/trunk/ rutorrent-instantsearch
@@ -572,7 +572,7 @@ install_deluge () {
 add_cron () {
    if [ $1 = "deluge" ]; then
 
-      sed -i 's/<username>/'$usernamevar'/' "$delCfgDir"/check-deluge > $userDir/scripts/check-deluge
+      sed -i 's/<username>/'$usernamevar'/' "$delCfgDir"/check-deluge > "$userDir"/scripts/check-deluge
       chown $usernamevar:$usernamevar "$userDir"/scripts/check-deluge
       chmod +x "$userDir"/scripts/check-deluge
       echo "@reboot "$userDir"/scripts/check-deluge >> /dev/null 2>&1" >> tempcron
