@@ -2,8 +2,8 @@ directory = /home/<username>/downloads
 session = /home/<username>/rtorrent/.session
 encryption = allow_incoming, try_outgoing, enable_retry
 schedule = watch_directory,10,10,load_start=/home/<username>/rtorrent_watch/*.torrent
-system.method.set_key = event.download.inserted_new,move_tor,"execute=mv,-u,$d.get_loaded_file=,/home/<username>/rtorrent/.sess$"
-tracker_numwant = -1
+system.method.set_key = event.download.inserted_new,move_tor,"execute=mv,-u,$d.get_loaded_file=,/home/<username>/rtorrent/.session"
+tracker_numwant = 200
 dht = disable
 schedule = low_diskspace, 5, 120, close_low_diskspace=100M
 port_range = 61040-61050
