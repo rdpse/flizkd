@@ -599,6 +599,17 @@ add_cron () {
    fi
 }
 
+install_x2go () {
+  if [ $deb7 = "yes" ]; then
+     echo "deb http://repo.mate-desktop.org/debian wheezy main" >> /etc/apt/sources.list
+     echo "deb http://packages.x2go.org/debian wheezy main" >> /etc/apt/sources.list
+     apt-get update
+     apt-get --yes --quiet --allow-unauthenticated install mate-archive-keyring x2go-keyring
+     apt-get update
+     apt-get -y install mate-desktop-environment-extra x2goserver x2goserver-xsession
+  fi
+}
+
 ## webmin
 install_webmin () { 
    apt-get install -y openssl libauthen-pam-perl libio-pty-perl apt-show-versions
@@ -625,6 +636,7 @@ install_znc () {
       make
       checkinstall -y
 }
+
 
 ## Code borrowed from VladGh's LEMP
 set_paths() {
@@ -696,9 +708,9 @@ echo "You will now be able to select optional addons for your seedbox..."
 echo
 opt_app rTorrent YES rtorrent_yn
 opt_app Deluge NO deluge_yn
+opt_app X2Go NO x2go_yn
 opt_app Webmin NO webmin_yn
 opt_app ZNC NO znc_yn
-# opt_app VNC NO vnc_yn
 
 echo
 
@@ -809,6 +821,10 @@ fi
 if [ $deluge_yn = "yes" ]; then
    install_deluge 1.3.6
    add_cron deluge
+fi
+
+if [ $x2go_yn = "yes" ]; then
+   install_x2go
 fi
 
 if [ $webmin_yn = "yes" ]; then
