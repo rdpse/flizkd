@@ -11,13 +11,15 @@ Run the following commands as root, on a fresh debian-based installation (see li
 
 ## Installs ##
 - rTorrent 0.9.3 & libTorrent 0.9.3 or Deluge 1.3.6
-- Latest ruTorrent version (currently 3.6) w/ official and 3rd party plugins
+- Latest ruTorrent version w/ official and 3rd party plugins
 - autodl-irssi
 - mktorrent
-- nginx 1.5.8
+- nginx 1.5.11
+- PHP 5.5.9
 - vsftpd
 
 ## Optional ##
+- X2Go (Wheezy only)
 - ZNC 1.2
 - Webmin 1.660
 
