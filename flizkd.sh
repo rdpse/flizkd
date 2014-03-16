@@ -607,6 +607,7 @@ install_x2go () {
      apt-get -y --force-yes --quiet --allow-unauthenticated install mate-archive-keyring x2go-keyring
      apt-get update
      apt-get -y install mate-desktop-environment-extra x2goserver x2goserver-xsession
+     
   fi
 }
 
@@ -796,7 +797,7 @@ echo $usernamevar > $flizkdDir/user
 
 ## Install nginx & configure php-fpm
 install_nginx 1.5.11
-install_php 5.5.9
+install_php 5.5.10
 
 # Make nginx and PHP paths global & restart them both
 set_paths
