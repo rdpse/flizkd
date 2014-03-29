@@ -14,7 +14,7 @@ Run the following commands as root, on a fresh debian-based installation (see li
 - Latest ruTorrent version w/ official and 3rd party plugins
 - autodl-irssi
 - mktorrent
-- nginx 1.5.11
+- nginx 1.5.12
 - PHP 5.5.10
 - vsftpd
 
