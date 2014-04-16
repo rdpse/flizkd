@@ -10,6 +10,8 @@ ngxCfgDir="$cfgDir"/nginx
 scriptsDir="$flizkdDir"/scripts
 initScripts="$scriptsDir"/init_scripts
 srcDir="$flizkdDir"/source
+ngConf=/etc/nginx
+ngSsl="$ngConf"/ssl
 wwwDir=/var/www
 destDir=/opt
 
@@ -180,8 +182,6 @@ opt_app () {
 ## Some of the code was borrowed from VladGh's LEMP
 install_nginx () {
 
-   ngConf=/etc/nginx
-   ngSsl="$ngConf"/ssl
    local passwdFile="$ngConf"/.passwd
    local ngLogDir=/var/log/nginx
    local ngStateDir=/var/lib/nginx
@@ -567,11 +567,11 @@ install_deluge () {
        python chdelpass.py "$userDir"/.config/deluge
        shred -n 6 -u -z /root/pass.txt
 
+    mkdir "$userDir"/scripts
 }
-##mkdir script?
+
 add_cron () {
    if [ $1 = "deluge" ]; then
-
       sed -i 's/<username>/'$usernamevar'/' "$delCfgDir"/check-deluge > "$userDir"/scripts/check-deluge
       chown $usernamevar:$usernamevar "$userDir"/scripts/check-deluge
       chmod +x "$userDir"/scripts/check-deluge
@@ -796,8 +796,8 @@ echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
 echo $usernamevar > $flizkdDir/user
 
 ## Install nginx & configure php-fpm
-install_nginx 1.5.12
-install_php 5.5.10
+install_nginx 1.5.13
+install_php 5.5.11
 
 # Make nginx and PHP paths global & restart them both
 set_paths
