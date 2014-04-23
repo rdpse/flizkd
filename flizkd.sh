@@ -370,6 +370,7 @@ install_php () {
   sed -i "s~@destDir@~$destDir~" "$initScripts"/php5-fpm
   mkdir -p /etc/php5/conf.d /var/log/php5-fpm
   cp -f php.ini-production /etc/php5/php.ini
+
   cp "$cfgDir"/php-fpm.conf /etc/php5/php-fpm.conf
   [ -f /etc/init.d/*fpm*] && rm /etc/init.d/*fpm*
   cp "$initScripts"/php5-fpm /etc/init.d/php5-fpm
@@ -385,6 +386,17 @@ install_php () {
   # The newer versions of php complain if a time zone is not set on php.ini (so we grab the system's one)
   TIMEZONE=$([ -f /etc/timezone ] && cat /etc/timezone | sed "s/\//\\\\\//g")
   sed -i "s/^\;date\.timezone.*$/date\.timezone = \"${TIMEZONE}\" /g" /etc/php5/php.ini
+
+  # Increase allowed file size
+  sed -i "
+    /post_max_size/ c\
+    post_max_size = 10M
+    " /etc/php5/php.ini
+
+  sed -i "
+    /upload_max_filesize/ c\
+    upload_max_filesize = 10M
+    " /etc/php5/php.ini
 
   chown -R www-data:www-data /var/log/php5-fpm
 
