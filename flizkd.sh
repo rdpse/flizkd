@@ -467,6 +467,7 @@ install_rtorrent () {
             svn co http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
             svn co http://rutorrent-instantsearch.googlecode.com/svn/trunk/ rutorrent-instantsearch
             svn co http://svn.rutorrent.org/svn/filemanager/trunk/filemanager
+            git clone https://github.com/autodl-community/autodl-rutorrent.git autodl-irssi
   
    chown -R www-data:www-data $wwwDir
    chmod -R 755 $wwwDir
@@ -513,7 +514,7 @@ install_rtorrent () {
    chmod +x "$userDir"/scripts/check-rt
    
    cd "$userDir"/.irssi/scripts
-      wget -O autodl-irssi.zip https://autodl-irssi-community.googlecode.com/files/autodl-irssi-community.zip
+      wget -O autodl-irssi.zip http://update.autodl-community.com/autodl-irssi-community.zip
       unzip -o autodl-irssi.zip
       rm autodl-irssi.zip
       cp autodl-irssi.pl autorun/
