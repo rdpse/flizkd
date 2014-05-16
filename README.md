@@ -10,12 +10,12 @@ Run the following commands as root, on a fresh debian-based installation (see li
     bash flizkd.sh
 
 ## Installs ##
-- rTorrent 0.9.3 & libTorrent 0.9.3 or Deluge 1.3.6
+- rTorrent 0.9.4 & libTorrent 0.13.4 or Deluge 1.3.6
 - Latest ruTorrent version w/ official and 3rd party plugins
 - autodl-irssi
 - mktorrent
-- nginx 1.5.12
-- PHP 5.5.10
+- nginx 1.7.0
+- PHP 5.5.12
 - vsftpd
 
 ## Optional ##
