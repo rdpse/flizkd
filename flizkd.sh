@@ -809,7 +809,7 @@ echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
 echo $usernamevar > $flizkdDir/user
 
 ## Install nginx & configure php-fpm
-install_nginx 1.5.13
+install_nginx 1.6.0
 install_php 5.5.11
 
 # Make nginx and PHP paths global & restart them both
@@ -828,7 +828,7 @@ cd $scriptsDir
 
 ## APP INSTALATION
 if [ $rtorrent_yn = "yes" ]; then
-   install_rtorrent 0.13.3 0.9.3 
+   install_rtorrent 0.13.4 0.9.4 
    add_cron rtorrent
 fi
 
