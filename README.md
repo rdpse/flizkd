@@ -6,7 +6,7 @@ Flizkd is a fork of [Flizbox](http://sourceforge.net/projects/flizbox/), a seedb
 ## How to use ##
 Run the following commands as root, on a fresh debian-based installation (see list of [supported distros](https://github.com/mindfk/flizkd#supported-distros-x64) below):
 
-    wget --no-check-certificate https://raw.github.com/mindfk/flizkd/master/flizkd.sh
+    wget --no-check-certificate https://raw.github.com/rdpse/flizkd/master/flizkd.sh
     bash flizkd.sh
 
 ## Installs ##
