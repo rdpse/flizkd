@@ -67,7 +67,7 @@ fi
 
 clear
 echo
-echo `tput bold``tput sgr 0 1`"Flizkd 1.0"`tput sgr0`" - https://github.com/mindfk/flizkd/"
+echo `tput bold``tput sgr 0 1`"Flizkd 1.0"`tput sgr0`" - https://github.com/rdpse/flizkd/"
 echo
 echo "This script installs the newest versions of rtorrent, rutorrent + plugins,"
 echo "autodl-irssi, nginx and FTP (vsftpd). It'll also create a web download"
@@ -731,8 +731,8 @@ echo
 apt-get -y install subversion
 cd /root
    mkdir $flizkdDir && cd $flizkdDir
-   svn co https://github.com/mindfk/flizkd/trunk/cfg
-   svn co https://github.com/mindfk/flizkd/trunk/scripts
+   svn co https://github.com/rdpse/flizkd/trunk/cfg
+   svn co https://github.com/rdpse/flizkd/trunk/scripts
 
 ## Reduce the percentage of reserved blocks
 tune2fs -m .5 $homePart
