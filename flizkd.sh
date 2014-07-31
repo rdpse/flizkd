@@ -735,7 +735,7 @@ cd /root
    svn co https://github.com/rdpse/flizkd/trunk/scripts
 
 ## Reduce the percentage of reserved blocks
-tune2fs -m .5 $homePart
+tune2fs -m 0 $homePart
 
 if [ $ksCheck = "kimsufi" ]; then
    if [ -f .ssh/authorized_keys2 ]; then
