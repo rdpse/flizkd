@@ -19,6 +19,6 @@ then
     echo "$SERVICE service running, everything is fine"
 else
     rm -f ${FILE}
-    echo "$SERVICE is not running, starting $SERVICE" && screen -d -m -S rtorrent $SERVICE
+    echo "$SERVICE is not running, starting $SERVICE" && tmux new -ds rtorrent $SERVICE
 fi
 done

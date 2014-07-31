@@ -24,7 +24,7 @@ if pgrep -u $USER $SERVICE2 > /dev/null
 then
     echo "$SERVICE2 service running, everything is fine"
 else
-    echo "$SERVICE2 is not running, starting $SERVICE2" && screen -d -m -S deluge-web $SERVICE2
+    echo "$SERVICE2 is not running, starting $SERVICE2" && tmux new -ds deluge-web $SERVICE2
 fi
 done
 
