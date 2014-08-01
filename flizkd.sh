@@ -494,11 +494,11 @@ install_rtorrent () {
       cp "$rutPluginsDir"/autodl-irssi/_conf.php "$rutPluginsDir"/autodl-irssi/conf.php
       sed -e 's_<adlPort>_'$adlPort'_' -e 's_<pass>_'$usernamevar'_' "$rutCfgDir"/plugins/adlconf > "$rutUserConfDir"/$usernamevar/plugins/autodl-irssi/conf.php
 
-   cp "$initScripts"/rtorrent /etc/init.d/
-   sed -i 's_<username>_'$usernamevar'_' /etc/init.d/rtorrent
-   cd /etc/init.d/
-      chmod +x rtorrent
-      update-rc.d rtorrent defaults
+  #cp "$initScripts"/rtorrent /etc/init.d/
+  #sed -i 's_<username>_'$usernamevar'_' /etc/init.d/rtorrent
+  # cd /etc/init.d/
+  #    chmod +x rtorrent
+  #    update-rc.d rtorrent defaults
    
    rm "$userDir"/.rtorrent.rc
    sed 's_<username>_'$usernamevar'_' "$rtCfgDir"/.rtorrent.rc > "$userDir"/.rtorrent.rc
