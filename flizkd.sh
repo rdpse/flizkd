@@ -809,7 +809,7 @@ echo $usernamevar " ALL=(ALL) ALL" >> /etc/sudoers
 echo $usernamevar > $flizkdDir/user
 
 ## Install nginx & configure php-fpm
-install_nginx 1.6.0
+install_nginx 1.6.1
 install_php 5.5.11
 
 # Make nginx and PHP paths global & restart them both
