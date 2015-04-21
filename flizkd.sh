@@ -617,7 +617,7 @@ install_x2go () {
      echo "deb http://http.debian.net/debian wheezy-backports main" >> /etc/apt/sources.list
      echo "deb http://packages.x2go.org/debian wheezy main" >> /etc/apt/sources.list
      apt-get update
-     apt-get -y --force-yes --quiet --allow-unauthenticated install mate-archive-keyring x2go-keyring
+     apt-get -y --force-yes --quiet --allow-unauthenticated install x2go-keyring
      apt-get update
      apt-get -y install mate-desktop-environment-extras x2goserver x2goserver-xsession
      
