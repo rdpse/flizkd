@@ -6,8 +6,7 @@ system.method.set_key = event.download.inserted_new,move_tor,"execute=mv,-u,$d.g
 tracker_numwant = 200
 dht = disable
 schedule = low_diskspace, 5, 120, close_low_diskspace=100M
-port_range = 61040-61050
-port_random = yes
+port_range = 49859-49859
 pieces.hash.on_completion.set = no
 min_peers = 10
 max_peers = 100
