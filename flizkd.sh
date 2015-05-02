@@ -111,7 +111,7 @@ until [[ $var1 == yes ]]; do
            usesha=yes
            var1=yes
            ;;
-           "12.10" | "13.04" | "13.10")
+           "12.10" | "13.04" | "13.10" | "14.04")
            ubuntu=yes
            ub1011=no
            ub1011x=no
