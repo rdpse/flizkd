@@ -620,7 +620,22 @@ install_x2go () {
      apt-get -y --force-yes --quiet --allow-unauthenticated install x2go-keyring
      apt-get update
      apt-get -y install mate-desktop-environment-extras x2goserver x2goserver-xsession
-     
+  fi     
+  if [ $ubuntu = "yes" ]; then
+     add-apt-repository ppa:x2go/stable -y
+     apt-get update
+     apt-get install -y x2goserver x2goserver-xsession
+     if [ $osVersion = "14.04" ]; then
+        apt-add-repository ppa:ubuntu-mate-dev/ppa -y
+        apt-add-repository ppa:ubuntu-mate-dev/trusty-mate -y
+        apt-get -y install ubuntu-mate-core ubuntu-mate-desktop
+     else
+        add-apt-repository "deb http://packages.mate-desktop.org/repo/ubuntu precise main" -y
+        apt-get update
+        apt-get --yes --quiet --allow-unauthenticated install mate-archive-keyring
+        apt-get update
+        apt-get -y install mate-desktop-environment
+     fi
   fi
 }
 
@@ -765,6 +780,12 @@ if [[ $osVersion = "12.10" || $osVersion = "13.04" || $osVersion = "13.10" ]]; t
    apt-get install -y python-software-properties
    apt-get update -y
    apt-get -y install checkinstall mediainfo libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl apache2-utilsirssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev python-makolibrsvg2-dev xdg-utils  vsftpd automake libtool ffmpeg nmap mktorrent htopbinutils cpp flex gcc libc6-dev m4 libpopt-dev make perl perl-modules openssl autoconf2.13 gnu-standards bison zlib1g-dev ntp ntpdate autotools-dev g++ psmisc re2c
+fi
+
+if [[ $osVersion = "14.04" ]]; then
+   apt-get install -y python-software-properties software-properties-common
+   apt-get update -y
+   apt-get install -y checkinstall mediainfo libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev screen libterm-readline-gnu-perl libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev xdg-utils  vsftpd automake libtool nmap mktorrent cpp flex gcc libc6-dev m4 libpopt-dev make perl perl-modules openssl autoconf2.13 gnu-standards bison zlib1g-dev ntp ntpdate autotools-dev g++ psmisc re2c
 fi
 
 if [ $ub1011x = "yes" ]; then
