@@ -4,7 +4,7 @@ Flizkd
 Flizkd is a fork of [Flizbox](http://sourceforge.net/projects/flizbox/), a seedbox installation script originally created by fliznora.
 
 ## How to use ##
-Run the following commands as root, on a fresh debian-based installation (see list of [supported distros](https://github.com/rdpse/flizkd#supported-distros-x64) below):
+Run the following command as root, on a fresh debian-based installation (see list of [supported distros](https://github.com/rdpse/flizkd#supported-distros-x64) below):
 
     wget -O- --no-check-certificate https://raw.github.com/rdpse/flizkd/master/flizkd.sh | bash
 
