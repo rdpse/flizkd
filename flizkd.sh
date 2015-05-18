@@ -435,13 +435,13 @@ install_rtorrent () {
          ./configure
          make
          make install
-      cd ../"$1"
+      cd ../libtorrent-"$1"
          ./autogen.sh
          chmod +x configure  
          ./configure
          make
          make install
-     cd ../"$2"
+     cd ../rtorrent-"$2"
          ./autogen.sh
          chmod +x configure 
          ./configure --with-xmlrpc-c
