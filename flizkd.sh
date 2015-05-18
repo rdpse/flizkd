@@ -428,21 +428,20 @@ install_rtorrent () {
 
    cd /tmp
       svn co http://svn.code.sf.net/p/xmlrpc-c/code/advanced xmlrpc-c
-      svn co https://github.com/rakshasa/libtorrent/trunk libtorrent-$1
-      svn co https://github.com/rakshasa/rtorrent/trunk rtorrent-$2
-      #wget http://libtorrent.rakshasa.no/downloads/libtorrent-"$1".tar.gz && tar zxfv libtorrent-"$1".tar.gz
-      #wget http://libtorrent.rakshasa.no/downloads/rtorrent-"$2".tar.gz && tar zxfv rtorrent-"$2".tar.gz
+      wget --no-check-certificate https://github.com/rakshasa/libtorrent/archive/"$1".tar.gz && tar zxvf "$1"
+      wget --no-check-certificate https://github.com/rakshasa/rtorrent/archive/"$2".tar.gz && tar zxvf "$2"
+
       cd xmlrpc-c
          ./configure
          make
          make install
-      cd ../libtorrent-"$1"
+      cd ../"$1"
          ./autogen.sh
          chmod +x configure  
          ./configure
          make
          make install
-     cd ../rtorrent-"$2"
+     cd ../"$2"
          ./autogen.sh
          chmod +x configure 
          ./configure --with-xmlrpc-c
@@ -451,7 +450,7 @@ install_rtorrent () {
          ldconfig
    
    cd ../
-      rm -rf xmlrpc-c libtorrent* rtorrent*
+      rm -rf xmlrpc-c "$1" "$2"
 
    cd $wwwDir
       touch index.html
