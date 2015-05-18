@@ -428,8 +428,10 @@ install_rtorrent () {
 
    cd /tmp
       svn co http://svn.code.sf.net/p/xmlrpc-c/code/advanced xmlrpc-c
-      wget http://libtorrent.rakshasa.no/downloads/libtorrent-"$1".tar.gz && tar zxfv libtorrent-"$1".tar.gz
-      wget http://libtorrent.rakshasa.no/downloads/rtorrent-"$2".tar.gz && tar zxfv rtorrent-"$2".tar.gz
+      svn co https://github.com/rakshasa/libtorrent libtorrent-$1
+      svn co https://github.com/rakshasa/rtorrent rtorrent-$2
+      #wget http://libtorrent.rakshasa.no/downloads/libtorrent-"$1".tar.gz && tar zxfv libtorrent-"$1".tar.gz
+      #wget http://libtorrent.rakshasa.no/downloads/rtorrent-"$2".tar.gz && tar zxfv rtorrent-"$2".tar.gz
       cd xmlrpc-c
          ./configure
          make
