@@ -428,8 +428,8 @@ install_rtorrent () {
 
    cd /tmp
       svn co http://svn.code.sf.net/p/xmlrpc-c/code/advanced xmlrpc-c
-      wget --no-check-certificate https://github.com/rakshasa/libtorrent/archive/"$1".tar.gz && tar zxvf "$1"
-      wget --no-check-certificate https://github.com/rakshasa/rtorrent/archive/"$2".tar.gz && tar zxvf "$2"
+      wget --no-check-certificate https://github.com/rakshasa/libtorrent/archive/"$1".tar.gz && tar zxvf "$1".tar.gz
+      wget --no-check-certificate https://github.com/rakshasa/rtorrent/archive/"$2".tar.gz && tar zxvf "$2".tar.gz
 
       cd xmlrpc-c
          ./configure
