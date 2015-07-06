@@ -852,12 +852,12 @@ cd $scriptsDir
 
 ## APP INSTALATION
 if [ $rtorrent_yn = "yes" ]; then
-   install_rtorrent 0.13.5 0.9.5 
+   install_rtorrent 0.13.4 0.9.4 
    add_cron rtorrent
 fi
 
 if [ $deluge_yn = "yes" ]; then
-   install_deluge 1.3.6
+   install_deluge 1.3.11
    add_cron deluge
 fi
 
