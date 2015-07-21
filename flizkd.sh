@@ -852,7 +852,7 @@ cd $scriptsDir
 
 ## APP INSTALATION
 if [ $rtorrent_yn = "yes" ]; then
-   install_rtorrent 0.13.4 0.9.4 
+   install_rtorrent branch-0.13.5 0.9.5 
    add_cron rtorrent
 fi
 
