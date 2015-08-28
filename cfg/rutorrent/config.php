@@ -38,7 +38,7 @@
 	$XMLRPCMountPoint = "/rutorrent/RPC.<username>";		// DO NOT DELETE THIS LINE!!! DO NOT COMMENT THIS LINE!!!
 
 	$pathToExternals = array(
-		"php" 	=> '/opt/php5/bin/php',			// Something like /usr/bin/php. If empty, will be found in PATH.
+		"php" 	=> '',			// Something like /usr/bin/php. If empty, will be found in PATH.
 		"curl"	=> '/usr/bin/curl',			// Something like /usr/bin/curl. If empty, will be found in PATH.
 		"gzip"	=> '/usr/bin/gzip',			// Something like /usr/bin/gzip. If empty, will be found in PATH.
 		"id"	=> '/usr/bin/id',			// Something like /usr/bin/id. If empty, will be found in PATH.
