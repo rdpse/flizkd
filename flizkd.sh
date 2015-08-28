@@ -388,6 +388,9 @@ install_php () {
       sed -i 's_<destDir>_'$destDir'_' php5-fpm
       chmod +x /etc/init.d/php5-fpm
       update-rc.d -f php5-fpm defaults
+      
+      # Symlink
+      ln -s /opt/php5/bin/php /usr/bin/php
    fi
    
    cd ~
