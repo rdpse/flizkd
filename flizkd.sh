@@ -42,6 +42,7 @@ check_install lsb-release
 
 ## SYS CHECK
 distro=$(lsb_release -ds)
+codename=$(lsb_release -cs)
 osVersion=$(lsb_release -rs)
 arch=$(uname -m)
 ksCheck=$(hostname | cut -d. -f2)
@@ -285,31 +286,38 @@ install_nginx () {
 
 ## Most of the code was borrowed from VladGh's LEMP
 install_php () {
-  
-  local libraries="libcurl4-openssl-dev libgd2-xpm-dev libjpeg-dev libpng3-dev libxpm-dev libfreetype6-dev libt1-dev libmcrypt-dev libxslt1-dev bzip2 libbz2-dev libxml2-dev libevent-dev libltdl-dev libmagickwand-dev libmagickcore-dev imagemagick libreadline-dev libc-client-dev libsnmp-dev snmpd snmp libpq-dev"
-  local archB=$(arch)-linux-gnu
-  
-  # Install all PHP Libraries
-  echo 'Installing libraries...'
-  apt-get -y install $libraries
-
-  # Download PHP
-  echo "Downloading and extracting PHP-$1..."
-  wget -O /tmp/php-"$1".tar.gz "http://us1.php.net/distributions/php-$1.tar.gz" 
-  cd /tmp
-  tar xzvf php-"$1".tar.gz
-
-  [ -f /usr/lib/${archB}/libjpeg.so ] && ln -fs /usr/lib/${archB}/libjpeg.so /usr/lib/
-  [ -f /usr/lib/${archB}/libpng.so ] && ln -fs /usr/lib/${archB}/libpng.so /usr/lib/
-  [ -f /usr/lib/${archB}/libXpm.so ] && ln -fs /usr/lib/${archB}/libXpm.so /usr/lib/
-  [ -f /usr/lib/${archB}/libmysqlclient.so ] && ln -fs /usr/lib/${archB}/libmysqlclient.so /usr/lib/
-  [ -d /usr/lib/${archB}/mit-krb5 ] && ln -fs /usr/lib/${archB}/mit-krb5/lib*.so /usr/lib/
-
-  # Compile php source
-  cd /tmp/php-"$1"
-    ./buildconf --force
-    echo 'Configuring PHP (Please be patient, this will take a while...)' 
-    ./configure \
+   if [ $debian = 'yes' ]; then
+      PHP_DEPS='php5-fpm php5-mysql php5-gd php5-curl php5-readline php5-mcrypt'
+      wget -O- https://www.dotdeb.org/dotdeb.gpg | apt-key add -
+      echo "deb http://packages.dotdeb.org $codename all
+      deb-src http://packages.dotdeb.org $codename all" > /etc/apt/sources.list.d/dotdeb.list
+      apt-get update
+      apt-get -y install $PHP_DEPS
+  else
+      local libraries="libcurl4-openssl-dev libgd2-xpm-dev libjpeg-dev libpng3-dev libxpm-dev libfreetype6-dev libt1-dev libmcrypt-dev libxslt1-dev bzip2 libbz2-dev libxml2-dev libevent-dev libltdl-dev libmagickwand-dev libmagickcore-dev imagemagick libreadline-dev libc-client-dev libsnmp-dev snmpd snmp libpq-dev"
+      local archB=$(arch)-linux-gnu
+      
+      # Install all PHP Libraries
+      echo 'Installing libraries...'
+      apt-get -y install $libraries
+      
+      # Download PHP
+      echo "Downloading and extracting PHP-$1..."
+      wget -O /tmp/php-"$1".tar.gz "http://us1.php.net/distributions/php-$1.tar.gz" 
+      cd /tmp
+      tar xzvf php-"$1".tar.gz
+      
+      [ -f /usr/lib/${archB}/libjpeg.so ] && ln -fs /usr/lib/${archB}/libjpeg.so /usr/lib/
+      [ -f /usr/lib/${archB}/libpng.so ] && ln -fs /usr/lib/${archB}/libpng.so /usr/lib/
+      [ -f /usr/lib/${archB}/libXpm.so ] && ln -fs /usr/lib/${archB}/libXpm.so /usr/lib/
+      [ -f /usr/lib/${archB}/libmysqlclient.so ] && ln -fs /usr/lib/${archB}/libmysqlclient.so /usr/lib/
+      [ -d /usr/lib/${archB}/mit-krb5 ] && ln -fs /usr/lib/${archB}/mit-krb5/lib*.so /usr/lib/
+      
+      # Compile php source
+      cd /tmp/php-"$1"
+      ./buildconf --force
+      echo 'Configuring PHP (Please be patient, this will take a while...)' 
+      ./configure \
       --prefix="$destDir"/php5 \
       --with-config-file-path=/etc/php5 \
       --with-config-file-scan-dir=/etc/php5/conf.d \
@@ -359,62 +367,62 @@ install_php () {
       --enable-sysvsem \
       --enable-sysvshm \
       --enable-sysvmsg
-
-  echo 'Compiling PHP (Please be patient, this will take a while...)' 
-  make -j8 
-  echo 'Installing PHP...' 
-  checkinstall -y
-
-  # Copy configuration files
-  echo 'Setting up PHP...' 
-  sed -i "s~@destDir@~$destDir~" "$initScripts"/php5-fpm
-  mkdir -p /etc/php5/conf.d /var/log/php5-fpm
-  cp -f php.ini-production /etc/php5/php.ini
-
-  cp "$cfgDir"/php-fpm.conf /etc/php5/php-fpm.conf
-  [ -f /etc/init.d/*fpm*] && rm /etc/init.d/*fpm*
-  cp "$initScripts"/php5-fpm /etc/init.d/php5-fpm
-
-  # Prepare service
-  cd /etc/init.d/
-     sed -i 's_<destDir>_'$destDir'_' php5-fpm
-     chmod +x /etc/init.d/php5-fpm
-     update-rc.d -f php5-fpm defaults
-
-  cd ~
-
-  # The newer versions of php complain if a time zone is not set on php.ini (so we grab the system's one)
-  TIMEZONE=$([ -f /etc/timezone ] && cat /etc/timezone | sed "s/\//\\\\\//g")
-  sed -i "s/^\;date\.timezone.*$/date\.timezone = \"${TIMEZONE}\" /g" /etc/php5/php.ini
-
-  # Increase allowed file size
-  sed -i "
-    /post_max_size/ c\
-    post_max_size = 10M
-    " /etc/php5/php.ini
-
-  sed -i "
-    /upload_max_filesize/ c\
-    upload_max_filesize = 10M
-    " /etc/php5/php.ini
-
-  chown -R www-data:www-data /var/log/php5-fpm
-
-  # Create log rotation script
-  echo '/var/log/php5-fpm/*.log {
-  weekly
-  missingok
-  rotate 52
-  compress
-  delaycompress
-  notifempty
-  create 640 www-data www-data
-  sharedscripts
-  postrotate
-  [ ! -f /var/run/php5-fpm.pid ] || kill -USR1 `cat /var/run/php5-fpm.pid`
-  endscript
-  }' > /etc/logrotate.d/php5-fpm
-
+      
+      echo 'Compiling PHP (Please be patient, this will take a while...)' 
+      make -j8 
+      echo 'Installing PHP...' 
+      checkinstall -y
+      
+      # Copy configuration files
+      echo 'Setting up PHP...' 
+      sed -i "s~@destDir@~$destDir~" "$initScripts"/php5-fpm
+      mkdir -p /etc/php5/conf.d /var/log/php5-fpm
+      cp -f php.ini-production /etc/php5/php.ini
+      
+      cp "$cfgDir"/php-fpm.conf /etc/php5/php-fpm.conf
+      [ -f /etc/init.d/*fpm*] && rm /etc/init.d/*fpm*
+      cp "$initScripts"/php5-fpm /etc/init.d/php5-fpm
+      
+      # Prepare service
+      cd /etc/init.d/
+      sed -i 's_<destDir>_'$destDir'_' php5-fpm
+      chmod +x /etc/init.d/php5-fpm
+      update-rc.d -f php5-fpm defaults
+   fi
+   
+   cd ~
+   
+   # The newer versions of php complain if a time zone is not set on php.ini (so we grab the system's one)
+   TIMEZONE=$([ -f /etc/timezone ] && cat /etc/timezone | sed "s/\//\\\\\//g")
+   sed -i "s/^\;date\.timezone.*$/date\.timezone = \"${TIMEZONE}\" /g" /etc/php5/php.ini
+   
+   # Increase allowed file size
+   sed -i "
+   /post_max_size/ c\
+   post_max_size = 10M
+   " /etc/php5/php.ini
+   
+   sed -i "
+   /upload_max_filesize/ c\
+   upload_max_filesize = 10M
+   " /etc/php5/php.ini
+   
+   chown -R www-data:www-data /var/log/php5-fpm
+   
+   # Create log rotation script
+   echo '/var/log/php5-fpm/*.log {
+   weekly
+   missingok
+   rotate 52
+   compress
+   delaycompress
+   notifempty
+   create 640 www-data www-data
+   sharedscripts
+   postrotate
+   [ ! -f /var/run/php5-fpm.pid ] || kill -USR1 `cat /var/run/php5-fpm.pid`
+   endscript
+   }' > /etc/logrotate.d/php5-fpm
 }
 
 ## lib_ver, rt_ver
