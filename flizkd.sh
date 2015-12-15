@@ -526,7 +526,7 @@ install_rtorrent () {
    chmod +x "$userDir"/scripts/check-rt
    
    cd "$userDir"/.irssi/scripts
-      wget -O autodl-irssi.zip https://github.com/autodl-community/autodl-irssi/archive/community-v1.60.zip
+      wget --no-check-certificate -O autodl-irssi.zip https://github.com/autodl-community/autodl-irssi/archive/community-v1.60.zip
       unzip -o autodl-irssi.zip
       rm autodl-irssi.zip
       cp autodl-irssi.pl autorun/
