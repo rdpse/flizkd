@@ -528,6 +528,7 @@ install_rtorrent () {
    cd "$userDir"/.irssi/scripts
       wget --no-check-certificate -O autodl-irssi.zip https://github.com/autodl-community/autodl-irssi/archive/community-v1.60.zip
       unzip -o autodl-irssi.zip
+      mv autodl-irssi-community-v1.60/* .
       rm autodl-irssi.zip
       cp autodl-irssi.pl autorun/
       mv "$rutCfgDir"/plugins/iFR.tracker AutodlIrssi/trackers/
