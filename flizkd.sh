@@ -131,7 +131,7 @@ until [[ $var1 == yes ]]; do
            usesha=no
            var1=yes
            ;;
-           7 | 7.[0-9])
+           7 | 7.*)
            debian=yes
            deb7=yes
            deb6=no
