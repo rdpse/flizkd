@@ -467,19 +467,13 @@ install_rtorrent () {
       cd webdownload
          ln -s "$userDir"/downloads
    cd $wwwDir
-      svn co http://rutorrent.googlecode.com/svn/trunk/rutorrent
-      cd $rutDir
-         rm -rf plugins/
-      cd $wwwDir
-         svn co http://rutorrent.googlecode.com/svn/trunk/plugins
-         mv plugins $rutDir
-         cd $rutPluginsDir
-            svn co http://rutorrent.googlecode.com/svn/trunk/plugins
-            svn co http://rutorrent-pausewebui.googlecode.com/svn/trunk/ pausewebui 
-            svn co http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
-            svn co http://rutorrent-instantsearch.googlecode.com/svn/trunk/ rutorrent-instantsearch
-            svn co http://svn.rutorrent.org/svn/filemanager/trunk/filemanager
-            git clone https://github.com/autodl-community/autodl-rutorrent.git autodl-irssi
+      git https://github.com/Novik/ruTorrent.git rutorrent
+      cd $rutPluginsDir
+         svn co http://rutorrent-pausewebui.googlecode.com/svn/trunk/ pausewebui 
+         svn co http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
+         svn co http://rutorrent-instantsearch.googlecode.com/svn/trunk/ rutorrent-instantsearch
+         svn co http://svn.rutorrent.org/svn/filemanager/trunk/filemanager
+         git clone https://github.com/autodl-community/autodl-rutorrent.git autodl-irssi
   
    chown -R www-data:www-data $wwwDir
    chmod -R 755 $wwwDir
