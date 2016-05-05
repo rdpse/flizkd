@@ -141,6 +141,17 @@ until [[ $var1 == yes ]]; do
            usesha=yes
            var1=yes
            ;;
+           8 | 8.* )
+           debian=yes
+           deb8=yes
+           deb7=no
+           deb6=no
+           ubuntu=no
+           ub1011=no
+           ub1011x=no
+           usesha=yes
+           var1=yes
+           ;;
            *)
            echo `tput setaf 1``tput bold`"This OS is not yet supported! (EXITING)"`tput sgr0`
            echo
@@ -821,6 +832,13 @@ fi
 if [ $deb7 = "yes" ]; then
    echo "deb http://ftp.debian.org/debian wheezy main contrib non-free" >> /etc/apt/sources.list
    echo "deb-src http://ftp.debian.org/debian wheezy main contrib non-free" >> /etc/apt/sources.list
+   apt-get update -y
+   apt-get purge -y --force-yes vsftpd
+   apt-get clean && apt-get autoclean
+   apt-get -y install checkinstall git-core mediainfo sudo libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl apache2-utils irssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev python-mako librsvg2-dev xdg-utils vsftpd automake libtool ffmpeg nmap mktorrent htop binutils cpp flex gcc libc6-dev m4 libpopt-dev make perl perl-modules openssl autoconf2.13 gnu-standards bison zlib1g-dev ntp ntpdate autotools-dev g++ psmisc re2c
+fi
+
+if [ $deb8 = "yes" ]; then
    apt-get update -y
    apt-get purge -y --force-yes vsftpd
    apt-get clean && apt-get autoclean
