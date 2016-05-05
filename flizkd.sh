@@ -467,7 +467,7 @@ install_rtorrent () {
       cd webdownload
          ln -s "$userDir"/downloads
    cd $wwwDir
-      git https://github.com/Novik/ruTorrent.git rutorrent
+      git clone https://github.com/Novik/ruTorrent.git rutorrent
       cd $rutPluginsDir
          svn co http://rutorrent-pausewebui.googlecode.com/svn/trunk/ pausewebui 
          svn co http://rutorrent-logoff.googlecode.com/svn/trunk/ logoff
