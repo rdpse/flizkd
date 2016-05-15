@@ -382,7 +382,7 @@ install_php () {
       echo 'Compiling PHP (Please be patient, this will take a while...)' 
       make -j8 
       echo 'Installing PHP...' 
-      checkinstall -y
+      make install
       
       # Copy configuration files
       echo 'Setting up PHP...' 
