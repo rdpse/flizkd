@@ -233,7 +233,7 @@ install_nginx () {
         make
 
         echo 'Installing...'
-        checkinstall -y 
+        make install
 
     if [ ! -d $ngStateDir ]; then
        mkdir $ngStateDir  
