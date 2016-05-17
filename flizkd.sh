@@ -761,7 +761,7 @@ opt_app ZNC NO znc_yn
 
 echo
 
-apt-get -y install subversion
+apt-get -y install subversion git-core
 cd /root
    mkdir $flizkdDir && cd $flizkdDir
    svn co https://github.com/rdpse/flizkd/trunk/cfg
