@@ -112,7 +112,7 @@ until [[ $var1 == yes ]]; do
            usesha=yes
            var1=yes
            ;;
-           "12.10" | "13.04" | "13.10" | "14.04")
+           "12.10" | "13.04" | "13.10" | "14.04" | 16.*)
            ubuntu=yes
            ub1011=no
            ub1011x=no
@@ -800,10 +800,10 @@ if [[ $osVersion = "12.10" || $osVersion = "13.04" || $osVersion = "13.10" ]]; t
    apt-get -y install checkinstall automake libcppunit-dev mediainfo libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev nano screen libterm-readline-gnu-perl apache2-utilsirssi libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev python-makolibrsvg2-dev xdg-utils vsftpd automake libtool ffmpeg nmap mktorrent htop binutils cpp flex gcc libc6-dev m4 libpopt-dev make perl perl-modules openssl autoconf2.13 gnu-standards bison zlib1g-dev ntp ntpdate autotools-dev g++ psmisc re2c
 fi
 
-if [[ $osVersion = "14.04" ]]; then
+if [[ $osVersion = "14.04" || $osVersion = "16.04" ]]; then
    apt-get install -y python-software-properties software-properties-common
    apt-get update -y
-   apt-get install -y checkinstall mediainfo apache2-utils libpcre3 libpcre3-dev libncursesw5-dev debhelper libtorrent-dev bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev screen libterm-readline-gnu-perl libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev xdg-utils  vsftpd automake libtool nmap mktorrent cpp flex gcc libc6-dev m4 libpopt-dev make perl perl-modules openssl autoconf2.13 gnu-standards bison zlib1g-dev ntp ntpdate autotools-dev g++ psmisc re2c
+   apt-get install -y checkinstall mediainfo apache2-utils libpcre3 libpcre3-dev libncursesw5-dev debhelper bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev screen libterm-readline-gnu-perl libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev xdg-utils  vsftpd automake libtool nmap mktorrent cpp flex gcc libc6-dev m4 libpopt-dev make perl perl-modules openssl autoconf2.13 gnu-standards bison zlib1g-dev ntp ntpdate autotools-dev g++ psmisc re2c
 fi
 
 if [ $ub1011x = "yes" ]; then
