@@ -25,6 +25,6 @@ check_hash = no
 system.file_allocate.set = yes
 network.http.ssl_verify_peer.set = 0
 network.http.max_open.set = 100
-network.max_open_files.set = 512
+network.max_open_files.set = 256
 log.open_file = "rtorrent", ~/rtorrent.log
 log.add_output = "error", "rtorrent"
