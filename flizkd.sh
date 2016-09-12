@@ -455,17 +455,17 @@ install_rtorrent () {
 
       cd xmlrpc-c
          ./configure
-         make
+         make -j"${coresNo}"
          make install
       cd ../libtorrent-"$1"
          chmod +x configure  
          ./configure
-         make
+         make -j"${coresNo}"
          make install
      cd ../rtorrent-"$2"
          chmod +x configure 
          ./configure --with-xmlrpc-c
-         make
+         make -j"${coresNo}"
          make install
          ldconfig
    
