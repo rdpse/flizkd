@@ -449,7 +449,7 @@ install_rtorrent () {
    local adlPort=$(perl -e 'print int(rand(65000-64990))+64990')
 
    cd /tmp
-      svn co http://svn.code.sf.net/p/xmlrpc-c/code/advanced xmlrpc-c
+      svn co http://svn.code.sf.net/p/xmlrpc-c/code/stable xmlrpc-c
       wget --no-check-certificate http://rtorrent.net/downloads/libtorrent-"$1".tar.gz && tar zxvf libtorrent-"$1".tar.gz
       wget --no-check-certificate http://rtorrent.net/downloads/rtorrent-"$2".tar.gz && tar zxvf rtorrent-"$2".tar.gz
 
