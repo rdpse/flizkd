@@ -9,7 +9,7 @@ Flizkd is a fork of [Flizbox](http://sourceforge.net/projects/flizbox/), a seedb
 ## How to use ##
 Run the following command as root, on a fresh debian-based installation (see list of [supported distros](https://github.com/rdpse/flizkd#supported-distros-x64) below):
 
-    wget --no-check-certificate https://bitbucket.org/rdpse/flizkd/raw/fb0a5bbbccf61895580fe185054468544b7d3fc3/flizkd.sh && bash flizkd.sh
+    wget --no-check-certificate https://raw.githubusercontent.com/rdpse/flizkd/master/flizkd.sh && bash flizkd.sh
 
 ## Installs ##
 - rTorrent 0.9.4 & libTorrent 0.13.4 or Deluge 1.3.6
