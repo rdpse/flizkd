@@ -547,9 +547,8 @@ install_rtorrent () {
    echo "[options]" > "$userDir"/.autodl/autodl.cfg
    echo "rt-dir = "$userDir"/downloads" >>$userDir/.autodl/autodl.cfg
    echo "upload-type = rtorrent" >>"$userDir"/.autodl/autodl.cfg
-   echo "[options]" > "$userDir"/.autodl/autodl2.cfg
-   echo "gui-server-port = "$adlPort >> $userDir/.autodl/autodl2.cfg
-   echo "gui-server-password = dl"$usernamevar >> "$userDir"/.autodl/autodl2.cfg
+   echo "gui-server-port = "$adlPort >> $userDir/.autodl/autodl.cfg
+   echo "gui-server-password = dl"$usernamevar >> "$userDir"/.autodl/autodl.cfg
    chown -R $usernamevar:$usernamevar "$userDir"/
    
    /etc/init.d/nginx restart
@@ -802,6 +801,7 @@ fi
 
 if [[ $osVersion = "14.04" || $osVersion = "16.04" ]]; then
    apt-get install -y python-software-properties software-properties-common
+   add-apt-repository -y ppa:mc3man/trusty-media
    apt-get update -y
    apt-get install -y checkinstall mediainfo apache2-utils ffmpeg irssi libpcre3 libpcre3-dev libncursesw5-dev debhelper bc libcppunit-dev libssl-dev build-essential pkg-config libcurl4-openssl-dev libsigc++-2.0-dev libncurses5-dev screen libterm-readline-gnu-perl libarchive-zip-perl libnet-ssleay-perl libhtml-parser-perl libxml-libxml-perl libdigest-sha-perl libjson-perl libjson-xs-perl libxml-libxslt-perl rar curl unzip zip unrar python python-twisted python-twisted-web2 python-openssl python-simplejson python-setuptools gettext intltool python-xdg python-chardet python-geoip python-libtorrent python-notify python-pygame python-gtk2 python-gtk2-dev xdg-utils  vsftpd automake libtool nmap mktorrent cpp flex gcc libc6-dev m4 libpopt-dev make perl perl-modules openssl autoconf2.13 gnu-standards bison zlib1g-dev ntp ntpdate autotools-dev g++ psmisc re2c
 fi
