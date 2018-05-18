@@ -631,8 +631,8 @@ add_cron () {
 
 install_x2go () {
   if [ $deb7 = "yes" ]; then
-     echo "deb http://http.debian.net/debian wheezy-backports main" >> /etc/apt/sources.list
-     echo "deb http://packages.x2go.org/debian wheezy main" >> /etc/apt/sources.list
+     echo "deb http://archives.packages.x2go.org/debian wheezy extras main" >> /etc/apt/sources.list
+     echo "deb-src http://archives.packages.x2go.org/debian wheezy extras main" >> /etc/apt/sources.list    
      apt-get update
      apt-get -y --force-yes --quiet --allow-unauthenticated install x2go-keyring
      apt-get update
