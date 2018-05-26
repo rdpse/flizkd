@@ -300,8 +300,8 @@ install_php () {
    if [ $debian = 'yes' ]; then
       PHP_DEPS='php5-fpm php5-mysql php5-gd php5-curl php5-readline php5-mcrypt'
       wget -O- https://www.dotdeb.org/dotdeb.gpg | apt-key add -
-      echo "deb http://packages.dotdeb.org $codename all
-      deb-src http://packages.dotdeb.org $codename all" > /etc/apt/sources.list.d/dotdeb.list
+      echo "deb http://packages.dotdeb.org ${codename}-php56 all
+      deb-src http://packages.dotdeb.org ${codename}-php56 all" > /etc/apt/sources.list.d/dotdeb.list
       apt-get update
       apt-get -y install $PHP_DEPS
   else
