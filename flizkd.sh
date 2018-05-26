@@ -661,12 +661,12 @@ install_webmin () {
    apt-get install -y openssl libauthen-pam-perl libio-pty-perl apt-show-versions
    if [ $ubuntu = "yes" ]; then
       http://www.webmin.com/download/deb/webmin-current.deb
-      dpkg -i webmin_*_all.deb
+      dpkg -i webmin_*.deb
    fi
    if [ $debian = "yes" ]; then
       cd /tmp
       wget http://www.webmin.com/download/deb/webmin-"$1".deb
-      dpkg -i webmin_*_all.deb
+      dpkg -i webmin_*.deb
    fi
 }
 
